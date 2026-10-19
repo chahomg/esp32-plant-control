@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
@@ -13,10 +14,14 @@ small,p{color:#b0c5ba}
 .card{background:#21372c;border-radius:16px;padding:18px;margin:12px 0}
 .value{font-size:27px;font-weight:bold;margin-top:12px}
 nav{display:flex;gap:8px;margin-top:24px}
-button{flex:1;background:#315b46;color:white;border:0;border-radius:12px;padding:14px 4px}
+button{flex:1;background:#315b46;color:white;border:0;border-radius:12px;padding:14px 4px;cursor:pointer}
 button.active{background:#75bb8e;color:#102319}
+button:disabled{opacity:.6;cursor:wait}
 section{display:none}
 section.active{display:block}
+.auth-actions{display:flex;gap:8px;margin-top:12px}
+.auth-actions button{flex:0 1 auto;padding:11px 14px}
+.status{font-size:14px;line-height:1.5;overflow-wrap:anywhere}
 </style>
 </head>
 <body>
@@ -24,7 +29,14 @@ section.active{display:block}
 <small>PLATYCERIUM RESEARCH SYSTEM</small>
 <h1>鹿角蕨環境研究中心</h1>
 <p>ESP32-S3 · Firebase Cloud</p>
-<div class="card">展示模式｜尚未連接 Firebase 即時資料</div>
+<div class="card">
+<div id="auth-status" class="status" role="status" aria-live="polite">正在初始化 Firebase 登入…</div>
+<div class="auth-actions">
+<button id="login-btn" type="button" disabled>使用 Google 登入</button>
+<button id="logout-btn" type="button" hidden>登出</button>
+</div>
+</div>
+<div class="card" id="data-status">展示模式｜尚未連接 Firebase 即時資料</div>
 <section id="monitor" class="active">
 <div class="grid">
 <div class="card">溫度<div class="value">-- °C</div></div>
@@ -46,10 +58,60 @@ section.active{display:block}
 </main>
 <script>
 function show(id,button){
-document.querySelectorAll('section').forEach(x=>x.classList.remove('active'));
-document.getElementById(id).classList.add('active');
-document.querySelectorAll('button').forEach(x=>x.classList.remove('active'));
-button.classList.add('active');
+ document.querySelectorAll('section').forEach(x=>x.classList.remove('active'));
+ document.getElementById(id).classList.add('active');
+ document.querySelectorAll('nav button').forEach(x=>x.classList.remove('active'));
+ button.classList.add('active');
+}
+</script>
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js';
+import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCKzLgyUZkWAfnJkqDMtxuOsTJeMC_RdHA",
+  authDomain: "esp32-plant-control.firebaseapp.com",
+  databaseURL: "https://esp32-plant-control-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "esp32-plant-control",
+  storageBucket: "esp32-plant-control.firebasestorage.app",
+  messagingSenderId: "758179316822",
+  appId: "1:758179316822:web:fbec086993309ef15ca7f7"
+};
+const status = document.getElementById('auth-status');
+const loginBtn = document.getElementById('login-btn');
+const logoutBtn = document.getElementById('logout-btn');
+try {
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const provider = new GoogleAuthProvider();
+  onAuthStateChanged(auth, user => {
+    status.textContent = user ? `Google 登入成功：${user.displayName || user.email || '已驗證使用者'}` : 'Firebase 已連線｜尚未登入 Google 帳號';
+    loginBtn.hidden = !!user;
+    logoutBtn.hidden = !user;
+    loginBtn.disabled = false;
+  }, err => { status.textContent = `登入狀態讀取失敗：${err.code || err.message}`; loginBtn.disabled = false; });
+  getRedirectResult(auth).catch(err => { status.textContent = `Google 登入失敗：${err.code || err.message}`; });
+  loginBtn.addEventListener('click', async () => {
+    loginBtn.disabled = true;
+    status.textContent = '正在開啟 Google 登入…';
+    try {
+      await signInWithPopup(auth, provider);
+    } catch(err) {
+      if (err.code === 'auth/popup-blocked') {
+        try { await signInWithRedirect(auth, provider); return; }
+        catch (redirectError) { err = redirectError; }
+      }
+      status.textContent = `登入未完成：${err.code || err.message}`;
+    } finally { loginBtn.disabled = false; }
+  });
+  logoutBtn.addEventListener('click', async () => {
+    logoutBtn.disabled = true;
+    try { await signOut(auth); }
+    catch(err) { status.textContent = `登出失敗：${err.code || err.message}`; }
+    finally { logoutBtn.disabled = false; }
+  });
+} catch(err) {
+  status.textContent = `Firebase 初始化失敗：${err.message}`;
 }
 </script>
 </body>
