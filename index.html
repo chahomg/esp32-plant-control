@@ -67,7 +67,7 @@ function show(id,button){
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js';
 import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js';
-
+import { getDatabase, ref, onValue } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js';
 const firebaseConfig = {
   apiKey: "AIzaSyCKzLgyUZkWAfnJkqDMtxuOsTJeMC_RdHA",
   authDomain: "esp32-plant-control.firebaseapp.com",
@@ -83,6 +83,24 @@ const logoutBtn = document.getElementById('logout-btn');
 try {
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
+ 
+const db = getDatabase(app);
+  
+onAuthStateChanged(auth, user => {
+  if (!user) return;
+  onValue(ref(db, 'testTemperature'), snapshot => {
+    const value = snapshot.val();
+    const temperatureCard = document.querySelector('#monitor .card .value');
+    if (temperatureCard) {
+      temperatureCard.textContent =
+        typeof value === 'number' ? value.toFixed(1) + ' °C（測試）' : '-- °C';
+    }
+  }, error => {
+    document.getElementById('data-status').textContent =
+      'Firebase 讀取失敗：' + error.message;
+  });
+});
+
   const provider = new GoogleAuthProvider();
   onAuthStateChanged(auth, user => {
     status.textContent = user ? `Google 登入成功：${user.displayName || user.email || '已驗證使用者'}` : 'Firebase 已連線｜尚未登入 Google 帳號';
