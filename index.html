@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>鹿角蕨環境研究中心</title>
+<style>
+body{margin:0;background:#101f1a;color:#eef7f0;font-family:-apple-system,sans-serif}
+main{max-width:480px;margin:auto;padding:22px}
+h1{font-size:25px;margin:12px 0}
+small,p{color:#b0c5ba}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.card{background:#21372c;border-radius:16px;padding:18px;margin:12px 0}
+.value{font-size:27px;font-weight:bold;margin-top:12px}
+nav{display:flex;gap:8px;margin-top:24px}
+button{flex:1;background:#315b46;color:white;border:0;border-radius:12px;padding:14px 4px}
+button.active{background:#75bb8e;color:#102319}
+section{display:none}
+section.active{display:block}
+</style>
+</head>
+<body>
+<main>
+<small>PLATYCERIUM RESEARCH SYSTEM</small>
+<h1>鹿角蕨環境研究中心</h1>
+<p>ESP32-S3 · Firebase Cloud</p>
+<div class="card">展示模式｜尚未連接 Firebase 即時資料</div>
+<section id="monitor" class="active">
+<div class="grid">
+<div class="card">溫度<div class="value">-- °C</div></div>
+<div class="card">相對濕度<div class="value">-- %</div></div>
+<div class="card">VPD<div class="value">-- kPa</div></div>
+<div class="card">PPFD / DLI<div class="value">未連接</div></div>
+</div>
+<div class="card">24 小時環境曲線<p>等待 Firebase 歷史資料連線</p></div>
+</section>
+<section id="history"><div class="card">歷史紀錄<p>待開發：24 小時曲線與 90 天研究資料</p></div></section>
+<section id="control"><div class="card">設備控制<p>尚未啟用，避免誤操作設備</p></div></section>
+<section id="models"><div class="card">環境模型<p>待開發：模型儲存與閉環重播</p></div></section>
+<nav>
+<button class="active" onclick="show('monitor',this)">監控</button>
+<button onclick="show('history',this)">紀錄</button>
+<button onclick="show('control',this)">控制</button>
+<button onclick="show('models',this)">模型</button>
+</nav>
+</main>
+<script>
+function show(id,button){
+document.querySelectorAll('section').forEach(x=>x.classList.remove('active'));
+document.getElementById(id).classList.add('active');
+document.querySelectorAll('button').forEach(x=>x.classList.remove('active'));
+button.classList.add('active');
+}
+</script>
+</body>
+</html>
