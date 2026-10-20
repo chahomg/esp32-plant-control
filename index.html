@@ -88,6 +88,7 @@ const db = getDatabase(app);
   
 onAuthStateChanged(auth, user => {
   if (!user) return;
+ status.textContent = 'Firebase UID：' + user.uid;
   onValue(ref(db, 'devices/esp32-s3/latest'), snapshot => {
     const value = snapshot.val();
     const temperatureCard = document.querySelector('#monitor .card .value');
