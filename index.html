@@ -88,13 +88,38 @@ const db = getDatabase(app);
   
 onAuthStateChanged(auth, user => {
   if (!user) return;
-  onValue(ref(db, 'testTemperature'), snapshot => {
+  onValue(ref(db, 'devices/esp32-s3/latest'), snapshot => {
     const value = snapshot.val();
     const temperatureCard = document.querySelector('#monitor .card .value');
     if (temperatureCard) {
       temperatureCard.textContent =
-        typeof value === 'number' ? value.toFixed(1) + ' °C（測試）' : '-- °C';
+        typeof value?.temperature_c === 'number' ? value.temperature_c.toFixed(2) + ' °C' : '-- °C';
     }
+const humidityCard = document.querySelectorAll('#monitor .card .value')[1];
+if (humidityCard) {
+  humidityCard.textContent =
+    typeof value?.humidity_rh === 'number'
+      ? value.humidity_rh.toFixed(2) + ' %'
+      : '-- %';
+}
+
+const vpdCard = document.querySelectorAll('#monitor .card .value')[2];
+if (vpdCard) {
+  if (typeof value?.temperature_c === 'number' &&
+      typeof value?.humidity_rh === 'number') {
+    const t = value.temperature_c;
+    const rh = value.humidity_rh;
+    const svp = 0.6108 * Math.exp((17.27 * t) / (t + 237.3));
+    const vpd = svp * (1 - rh / 100);
+    vpdCard.textContent = vpd.toFixed(2) + ' kPa';
+  } else {
+    vpdCard.textContent = '-- kPa';
+  }
+}
+document.getElementById('data-status').textContent =
+  value ? 'Firebase 即時資料連線成功' : '等待 ESP32 感測資料';
+
+
   }, error => {
     document.getElementById('data-status').textContent =
       'Firebase 讀取失敗：' + error.message;
