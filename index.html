@@ -2,161 +2,67 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>鹿角蕨環境研究中心</title>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>鹿角蕨環境研究中心 · Dashboard V1.1</title>
 <style>
-body{margin:0;background:#101f1a;color:#eef7f0;font-family:-apple-system,sans-serif}
-main{max-width:480px;margin:auto;padding:22px}
-h1{font-size:25px;margin:12px 0}
-small,p{color:#b0c5ba}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.card{background:#21372c;border-radius:16px;padding:18px;margin:12px 0}
-.value{font-size:27px;font-weight:bold;margin-top:12px}
-nav{display:flex;gap:8px;margin-top:24px}
-button{flex:1;background:#315b46;color:white;border:0;border-radius:12px;padding:14px 4px;cursor:pointer}
-button.active{background:#75bb8e;color:#102319}
-button:disabled{opacity:.6;cursor:wait}
-section{display:none}
-section.active{display:block}
-.auth-actions{display:flex;gap:8px;margin-top:12px}
-.auth-actions button{flex:0 1 auto;padding:11px 14px}
-.status{font-size:14px;line-height:1.5;overflow-wrap:anywhere}
+:root{color-scheme:dark;--bg:#101f1a;--card:#21372c;--fg:#eef7f0;--muted:#b0c5ba;--temp:#ffad69;--rh:#79c8ff}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font-family:-apple-system,BlinkMacSystemFont,'Noto Sans TC',sans-serif}main{max-width:520px;margin:auto;padding:12px 14px 20px}header{margin:0 0 8px}header small{color:var(--muted);font-size:10px;letter-spacing:.08em}h1{font-size:21px;margin:4px 0 1px;line-height:1.25}header p{color:var(--muted);font-size:11px;margin:0}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.card{background:var(--card);border-radius:13px;padding:12px}.metric{min-height:91px}.metric-label{font-size:13px;color:#d9e9df}.value{font-size:clamp(20px,5.8vw,28px);font-weight:700;letter-spacing:-.02em;margin-top:9px;white-space:nowrap}.value.small{font-size:clamp(17px,4.8vw,23px)}.chart-card{margin-top:9px;padding:11px 9px 9px}.chart-head{display:flex;justify-content:space-between;align-items:baseline;gap:5px;margin:0 4px 5px}.chart-title{font-size:15px;font-weight:650}.chart-note{font-size:10px;color:var(--muted);text-align:right}.legend{display:flex;gap:15px;font-size:11px;margin:0 5px 2px}.legend span{display:flex;align-items:center;gap:5px}.swatch{width:15px;height:3px;border-radius:2px;display:inline-block}.chart-wrap{height:clamp(190px,31vh,275px);width:100%}svg{width:100%;height:100%;display:block;overflow:visible}.chart-message{font-size:11px;color:var(--muted);margin:2px 5px 0;min-height:16px}.hidden{display:none!important}.notice{border:1px solid #688f75;background:#1c382a;border-radius:10px;padding:9px;margin:8px 0;font-size:12px;overflow-wrap:anywhere}.notice.error{border-color:#b77d6b}.notice button{background:#315b46;color:white;border:0;border-radius:8px;padding:8px 11px;margin:5px 5px 0 0}.auth-actions{display:flex;gap:8px}.auth-actions button[hidden]{display:none}nav{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:10px}nav button{background:#315b46;color:white;border:0;border-radius:10px;padding:10px 0;font-size:12px}nav button.active{background:#75bb8e;color:#102319;font-weight:650}section{display:none}section.active{display:block}.placeholder{margin-top:9px;font-size:13px;line-height:1.6;color:var(--muted)}
+@media(max-height:730px){main{padding-top:8px}h1{font-size:19px}.metric{min-height:79px;padding:9px}.value{margin-top:6px}.chart-wrap{height:clamp(170px,29vh,220px)}nav{margin-top:7px}}
+.dev-auth{margin-top:14px;padding-bottom:4px}.dev-label{font-size:11px;color:var(--muted);margin:0 3px 4px}.dev-auth .notice{margin:0}
 </style>
 </head>
-<body>
-<main>
-<small>PLATYCERIUM RESEARCH SYSTEM</small>
-<h1>鹿角蕨環境研究中心</h1>
-<p>ESP32-S3 · Firebase Cloud</p>
-<div class="card">
-<div id="auth-status" class="status" role="status" aria-live="polite">正在初始化 Firebase 登入…</div>
-<div class="auth-actions">
-<button id="login-btn" type="button" disabled>使用 Google 登入</button>
-<button id="logout-btn" type="button" hidden>登出</button>
-</div>
-</div>
-<div class="card" id="data-status">展示模式｜尚未連接 Firebase 即時資料</div>
-<section id="monitor" class="active">
-<div class="grid">
-<div class="card">溫度<div class="value">-- °C</div></div>
-<div class="card">相對濕度<div class="value">-- %</div></div>
-<div class="card">VPD<div class="value">-- kPa</div></div>
-<div class="card">PPFD / DLI<div class="value">未連接</div></div>
-</div>
-<div class="card">24 小時環境曲線<p>等待 Firebase 歷史資料連線</p></div>
-</section>
-<section id="history"><div class="card">歷史紀錄<p>待開發：24 小時曲線與 90 天研究資料</p></div></section>
-<section id="control"><div class="card">設備控制<p>尚未啟用，避免誤操作設備</p></div></section>
-<section id="models"><div class="card">環境模型<p>待開發：模型儲存與閉環重播</p></div></section>
-<nav>
-<button class="active" onclick="show('monitor',this)">監控</button>
-<button onclick="show('history',this)">紀錄</button>
-<button onclick="show('control',this)">控制</button>
-<button onclick="show('models',this)">模型</button>
-</nav>
+<body><main>
+<header><small>PLATYCERIUM RESEARCH SYSTEM</small><h1>鹿角蕨環境研究中心</h1><p>ESP32-S3 · Firebase Cloud</p></header>
+
+<section id="monitor" class="active"><div class="grid">
+<div class="card metric"><div class="metric-label">溫度</div><div id="temperature" class="value">-- °C</div></div>
+<div class="card metric"><div class="metric-label">相對濕度</div><div id="humidity" class="value">-- %</div></div>
+<div class="card metric"><div class="metric-label">VPD</div><div id="vpd" class="value">-- kPa</div></div>
+<div class="card metric"><div class="metric-label">PPFD / DLI</div><div id="ppfd" class="value small">未連接</div></div>
+</div><div class="card chart-card"><div class="chart-head"><span class="chart-title">今日溫濕度曲線</span><span class="chart-note" id="chart-date"></span></div><div class="legend"><span><i class="swatch" style="background:var(--temp)"></i>溫度 °C（左軸）</span><span><i class="swatch" style="background:var(--rh)"></i>濕度 %（右軸）</span></div><div class="chart-wrap"><svg id="chart" viewBox="0 0 350 210" role="img" aria-label="今日溫度與濕度雙軸曲線"></svg></div><p id="chart-message" class="chart-message">等待即時資料；歷史資料尚未連接。</p></div></section>
+<section id="history"><div class="card placeholder">歷史紀錄：尚未連接 Firebase 歷史資料。待完成後可顯示完整 24 小時及 90 天研究曲線。</div></section>
+<section id="control"><div class="card placeholder">設備控制尚未啟用，避免誤操作設備。</div></section>
+<section id="models"><div class="card placeholder">環境模型待開發：模型儲存與閉環重播。</div></section>
+<nav><button class="active" data-section="monitor">監控</button><button data-section="history">紀錄</button><button data-section="control">控制</button><button data-section="models">模型</button></nav>
+<div class="dev-auth"><div class="dev-label">開發測試 · Google 驗證</div><div id="notice" class="notice hidden" role="status" aria-live="polite"><span id="notice-text"></span><div class="auth-actions"><button id="login-btn" type="button" hidden>使用 Google 登入</button><button id="logout-btn" type="button" hidden>登出</button></div></div></div>
 </main>
 <script>
-function show(id,button){
- document.querySelectorAll('section').forEach(x=>x.classList.remove('active'));
- document.getElementById(id).classList.add('active');
- document.querySelectorAll('nav button').forEach(x=>x.classList.remove('active'));
- button.classList.add('active');
-}
+document.querySelectorAll('nav button').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('section').forEach(s=>s.classList.toggle('active',s.id===b.dataset.section));document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('active',x===b))}));
+const chart=document.getElementById('chart'),points=[];let lastDay='';
+function dayKey(d){return [d.getFullYear(),d.getMonth()+1,d.getDate()].join('-')}
+function drawChart(){const now=new Date(),today=dayKey(now);if(lastDay!==today){points.length=0;lastDay=today}document.getElementById('chart-date').textContent=now.toLocaleDateString('zh-TW',{month:'2-digit',day:'2-digit'});const W=350,H=210,L=39,R=37,T=13,B=25,plotW=W-L-R,plotH=H-T-B;const xs=ms=>L+((ms-new Date(now.getFullYear(),now.getMonth(),now.getDate()).getTime())/86400000)*plotW;const temps=points.map(p=>p.t),rhs=points.map(p=>p.rh);let tMin=temps.length?Math.floor(Math.min(...temps)-1):15,tMax=temps.length?Math.ceil(Math.max(...temps)+1):35;if(tMax-tMin<4){tMin-=2;tMax+=2}let rhMin=rhs.length?Math.max(0,Math.floor(Math.min(...rhs)-5)):0,rhMax=rhs.length?Math.min(100,Math.ceil(Math.max(...rhs)+5)):100;if(rhMax-rhMin<10){rhMin=Math.max(0,rhMin-5);rhMax=Math.min(100,rhMax+5)}const yt=v=>T+(tMax-v)/(tMax-tMin)*plotH,yr=v=>T+(rhMax-v)/(rhMax-rhMin)*plotH;let s='';for(let i=0;i<=4;i++){const y=T+i*plotH/4,tt=tMax-(tMax-tMin)*i/4,rr=rhMax-(rhMax-rhMin)*i/4;s+=`<line x1="${L}" y1="${y}" x2="${W-R}" y2="${y}" stroke="#567064" stroke-opacity=".5" stroke-width=".6"/><text x="${L-5}" y="${y+3}" text-anchor="end" fill="#ffad69" font-size="9">${tt.toFixed(0)}</text><text x="${W-R+5}" y="${y+3}" fill="#79c8ff" font-size="9">${rr.toFixed(0)}</text>`}for(let h=0;h<=24;h+=6){const x=L+h/24*plotW;s+=`<text x="${x}" y="${H-5}" text-anchor="middle" fill="#b0c5ba" font-size="9">${String(h).padStart(2,'0')}:00</text>`}function series(key,fn,color){const valid=points.filter(p=>Number.isFinite(p[key]));if(!valid.length)return '';const coords=valid.map(p=>`${xs(p.ms).toFixed(2)},${fn(p[key]).toFixed(2)}`);let out=valid.length>1?`<polyline points="${coords.join(' ')}" fill="none" stroke="${color}" stroke-width="2.3" stroke-linejoin="round" stroke-linecap="round"/>`:'';const last=valid[valid.length-1];out+=`<circle cx="${xs(last.ms)}" cy="${fn(last[key])}" r="3.2" fill="${color}"/>`;return out}chart.innerHTML=s+series('t',yt,'#ffad69')+series('rh',yr,'#79c8ff');document.getElementById('chart-message').textContent=points.length?'目前僅記錄本次開啟頁面後收到的資料；尚無完整 24 小時歷史資料。':'等待即時資料；完整 24 小時歷史資料尚未連接。'}
+function addPoint(t,rh,ts){const ms=Date.now();if(!Number.isFinite(t)||!Number.isFinite(rh))return;const d=new Date(ms);if(dayKey(d)!==lastDay){points.length=0;lastDay=dayKey(d)}if(points.length&&ms-points[points.length-1].ms<5000)return;points.push({ms,t,rh});if(points.length>3000)points.shift();drawChart()}
+drawChart();
 </script>
 <script type="module">
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js';
-import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js';
-import { getDatabase, ref, onValue } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js';
-const firebaseConfig = {
-  apiKey: "AIzaSyCKzLgyUZkWAfnJkqDMtxuOsTJeMC_RdHA",
-  authDomain: "esp32-plant-control.firebaseapp.com",
-  databaseURL: "https://esp32-plant-control-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "esp32-plant-control",
-  storageBucket: "esp32-plant-control.firebasestorage.app",
-  messagingSenderId: "758179316822",
-  appId: "1:758179316822:web:fbec086993309ef15ca7f7"
-};
-const status = document.getElementById('auth-status');
-const loginBtn = document.getElementById('login-btn');
-const logoutBtn = document.getElementById('logout-btn');
-try {
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
- 
-const db = getDatabase(app);
-  
-onAuthStateChanged(auth, user => {
-  if (!user) return;
- status.textContent = 'Firebase UID：' + user.uid;
-  onValue(ref(db, 'devices/esp32-s3/latest'), snapshot => {
-    const value = snapshot.val();
-    const temperatureCard = document.querySelector('#monitor .card .value');
-    if (temperatureCard) {
-      temperatureCard.textContent =
-        typeof value?.temperature_c === 'number' ? value.temperature_c.toFixed(2) + ' °C' : '-- °C';
-    }
-const humidityCard = document.querySelectorAll('#monitor .card .value')[1];
-if (humidityCard) {
-  humidityCard.textContent =
-    typeof value?.humidity_rh === 'number'
-      ? value.humidity_rh.toFixed(2) + ' %'
-      : '-- %';
-}
-
-const vpdCard = document.querySelectorAll('#monitor .card .value')[2];
-if (vpdCard) {
-  if (typeof value?.temperature_c === 'number' &&
-      typeof value?.humidity_rh === 'number') {
-    const t = value.temperature_c;
-    const rh = value.humidity_rh;
-    const svp = 0.6108 * Math.exp((17.27 * t) / (t + 237.3));
-    const vpd = svp * (1 - rh / 100);
-    vpdCard.textContent = vpd.toFixed(2) + ' kPa';
-  } else {
-    vpdCard.textContent = '-- kPa';
-  }
-}
-document.getElementById('data-status').textContent =
-  value ? 'Firebase 即時資料連線成功' : '等待 ESP32 感測資料';
-
-
-  }, error => {
-    document.getElementById('data-status').textContent =
-      'Firebase 讀取失敗：' + error.message;
-  });
-});
-
-  const provider = new GoogleAuthProvider();
-  onAuthStateChanged(auth, user => {
-    status.textContent = user ? `Google 登入成功：${user.displayName || user.email || '已驗證使用者'}` : 'Firebase 已連線｜尚未登入 Google 帳號';
-    loginBtn.hidden = !!user;
-    logoutBtn.hidden = !user;
-    loginBtn.disabled = false;
-  }, err => { status.textContent = `登入狀態讀取失敗：${err.code || err.message}`; loginBtn.disabled = false; });
-  getRedirectResult(auth).catch(err => { status.textContent = `Google 登入失敗：${err.code || err.message}`; });
-  loginBtn.addEventListener('click', async () => {
-    loginBtn.disabled = true;
-    status.textContent = '正在開啟 Google 登入…';
-    try {
-      await signInWithPopup(auth, provider);
-    } catch(err) {
-      if (err.code === 'auth/popup-blocked') {
-        try { await signInWithRedirect(auth, provider); return; }
-        catch (redirectError) { err = redirectError; }
-      }
-      status.textContent = `登入未完成：${err.code || err.message}`;
-    } finally { loginBtn.disabled = false; }
-  });
-  logoutBtn.addEventListener('click', async () => {
-    logoutBtn.disabled = true;
-    try { await signOut(auth); }
-    catch(err) { status.textContent = `登出失敗：${err.code || err.message}`; }
-    finally { logoutBtn.disabled = false; }
-  });
-} catch(err) {
-  status.textContent = `Firebase 初始化失敗：${err.message}`;
-}
-</script>
-</body>
-</html>
+import {initializeApp} from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js';
+import {getAuth,GoogleAuthProvider,signInWithPopup,signInWithRedirect,getRedirectResult,onAuthStateChanged,signOut} from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js';
+import {getDatabase,ref,onValue} from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js';
+const firebaseConfig={apiKey:'AIzaSyCKzLgyUZkWAfnJkqDMtxuOsTJeMC_RdHA',authDomain:'esp32-plant-control.firebaseapp.com',databaseURL:'https://esp32-plant-control-default-rtdb.asia-southeast1.firebasedatabase.app',projectId:'esp32-plant-control',storageBucket:'esp32-plant-control.firebasestorage.app',messagingSenderId:'758179316822',appId:'1:758179316822:web:fbec086993309ef15ca7f7'};
+const notice=document.getElementById('notice'),noticeText=document.getElementById('notice-text'),loginBtn=document.getElementById('login-btn'),logoutBtn=document.getElementById('logout-btn');
+function message(text,showLogin=false,isError=false){notice.classList.toggle('hidden',!text);notice.classList.toggle('error',isError);noticeText.textContent=text||'';loginBtn.hidden=!showLogin;logoutBtn.hidden=true}
+try{
+ const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getDatabase(app),provider=new GoogleAuthProvider();let unsubscribe=null;
+ onAuthStateChanged(auth,user=>{
+  if(unsubscribe){unsubscribe();unsubscribe=null}
+  if(!user){message('請使用 Google 帳號登入，以讀取即時環境資料。',true);return}
+  message('');
+  unsubscribe=onValue(ref(db,'devices/esp32-s3/latest'),snapshot=>{
+   const v=snapshot.val();if(!v){message('等待 ESP32 感測資料。');return}message('');
+   const t=typeof v.temperature_c==='number'?v.temperature_c:NaN,rh=typeof v.humidity_rh==='number'?v.humidity_rh:NaN;
+   document.getElementById('temperature').textContent=Number.isFinite(t)?t.toFixed(2)+' °C':'-- °C';
+   document.getElementById('humidity').textContent=Number.isFinite(rh)?rh.toFixed(2)+' %':'-- %';
+   document.getElementById('vpd').textContent=Number.isFinite(t)&&Number.isFinite(rh)?(0.6108*Math.exp(17.27*t/(t+237.3))*(1-rh/100)).toFixed(2)+' kPa':'-- kPa';
+   // PPFD/DLI intentionally unchanged until actual sensor data and schema are confirmed.
+   const timestamp=Number(v.timestamp);if(Number.isFinite(t)&&Number.isFinite(rh)){
+    // The latest node is not historical storage. Record observations only while this page is open.
+    const key=String(timestamp)+'|'+t+'|'+rh;
+    if(key!==window.__lastReadingKey){window.__lastReadingKey=key;addPoint(t,rh,timestamp)}
+   }
+  },err=>message('Firebase 讀取失敗：'+(err.code||err.message),false,true));
+ },err=>message('登入狀態讀取失敗：'+(err.code||err.message),true,true));
+ getRedirectResult(auth).catch(err=>message('Google 登入失敗：'+(err.code||err.message),true,true));
+ loginBtn.addEventListener('click',async()=>{loginBtn.disabled=true;try{await signInWithPopup(auth,provider)}catch(err){if(err.code==='auth/popup-blocked'){try{await signInWithRedirect(auth,provider);return}catch(e){err=e}}message('登入未完成：'+(err.code||err.message),true,true)}finally{loginBtn.disabled=false}});
+ logoutBtn.addEventListener('click',async()=>{try{await signOut(auth)}catch(err){message('登出失敗：'+(err.code||err.message),false,true)}});
+}catch(err){message('Firebase 初始化失敗：'+err.message,false,true)}
+</script></body></html>
