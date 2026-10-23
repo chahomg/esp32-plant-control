@@ -28,6 +28,7 @@
 <div class="card" style="margin-top:12px"><button class="action" id="diag-toggle" type="button">後端測試結果 →</button></div>
 <div class="dev-auth" aria-hidden="true"><div id="notice" class="notice hidden" role="status"><span id="notice-text"></span><button id="login-btn" type="button" hidden>使用 Google 登入</button><button id="logout-btn" type="button" hidden>登出</button></div>
 </div>
+</div><!-- /home-page: diagnostics must be a sibling, not a child -->
 <div id="diagnostics-page" class="diag-page" aria-label="後端測試結果">
 <div class="diag-top"><button id="diag-home" class="action" type="button">← Home</button><h2>後端測試結果</h2></div>
 <div class="card"><p class="status">此頁顯示 Firebase 與雲端資料介面診斷；ESP32 的 MicroSD、SHT30、PAR RS-485 診斷，需由裝置同步到 Firebase 後才能顯示。</p><div id="diag-results" class="diag-grid"></div></div>
