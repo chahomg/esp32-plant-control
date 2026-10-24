@@ -13,7 +13,7 @@
 </head>
 <body><main>
 <div id="home-page">
-<header><small>PLATYCERIUM RESEARCH SYSTEM</small><h1>鹿角蕨環境研究中心</h1><p>ESP32-S3 · Firebase Cloud</p></header>
+<header><small>PLATYCERIUM RESEARCH SYSTEM</small><h1>鹿角蕨環境研究中心</h1></header>
 
 <section id="monitor" class="active"><div class="grid">
 <div class="card metric"><div class="metric-label">溫度</div><div id="temperature" class="value">-- °C</div></div>
@@ -24,16 +24,11 @@
 <section id="history"><div class="card"><div class="chart-title">MicroSD／Firebase 每日紀錄</div><p class="status">此雲端頁面讀取 Firebase 歷史資料鏡像，不會直接連接區域網路 MicroSD。ESP32 必須另外把每日紀錄同步到 Firebase。</p><label for="history-date">選擇日期</label> <input id="history-date" type="date"><button id="history-refresh" class="action" type="button">讀取日期紀錄</button><p id="history-status" class="status">等待連線。</p><div class="chart-title" style="margin:12px 0 4px">歷史溫濕度曲線</div><div class="legend"><span><i class="swatch" style="background:var(--temp)"></i>溫度 °C（左軸）</span><span><i class="swatch" style="background:var(--rh)"></i>濕度 %（右軸）</span></div><div class="chart-wrap"><svg id="history-climate-chart" viewBox="0 0 350 210" role="img" aria-label="所選日期歷史溫濕度雙軸曲線"></svg></div><p id="history-climate-status" class="chart-message">尚未讀取歷史溫濕度。</p><div class="chart-title" style="margin:12px 0 4px">PAR 原始值曲線（待校準）</div><div class="chart-wrap"><svg id="par-chart" viewBox="0 0 350 210" aria-label="每日 PAR 原始值曲線"></svg></div><p class="status">PAR 為原始值，尚未校正為 PPFD；無資料時不補值。</p></div></section>
 <section id="control"><div class="card placeholder">設備控制尚未啟用，避免誤操作設備。</div></section>
 <section id="models"><div class="card placeholder">環境模型待開發：模型儲存與閉環重播。</div></section>
-<nav><button class="active" data-section="monitor">監控</button><button data-section="history">紀錄</button><button data-section="control">控制</button><button data-section="models">模型</button></nav>
-<div class="card" style="margin-top:12px"><button class="action" id="diag-toggle" type="button">後端測試結果 →</button></div>
+<nav><button class="active" data-section="monitor">監控</button><button data-section="history">紀錄</button><button data-section="control">控制（專業版）</button><button data-section="models">模型（專業版）</button></nav>
+
 <div class="dev-auth" aria-hidden="true"><div id="notice" class="notice hidden" role="status"><span id="notice-text"></span><button id="login-btn" type="button" hidden>使用 Google 登入</button><button id="logout-btn" type="button" hidden>登出</button></div>
 </div>
 </div><!-- /home-page: diagnostics must be a sibling, not a child -->
-<div id="diagnostics-page" class="diag-page" aria-label="後端測試結果">
-<div class="diag-top"><button id="diag-home" class="action" type="button">← Home</button><h2>後端測試結果</h2></div>
-<div class="card"><p class="status">此頁顯示 Firebase 與雲端資料介面診斷；ESP32 的 MicroSD、SHT30、PAR RS-485 診斷，需由裝置同步到 Firebase 後才能顯示。</p><div id="diag-results" class="diag-grid"></div></div>
-<button id="diag-copy" class="action" type="button">複製診斷結果</button>
-</div>
 </main>
 <script>
 document.querySelectorAll('nav button').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('section').forEach(s=>s.classList.toggle('active',s.id===b.dataset.section));document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('active',x===b))}));
@@ -41,11 +36,7 @@ const chart=document.getElementById('chart'),points=[];let lastDay='',historyRea
 const diag={};
 function setDiag(name,status,reason){diag[name]={status,reason};renderDiag()}
 function renderDiag(){const e=document.getElementById('diag-results');if(!e)return;e.innerHTML='';Object.entries(diag).forEach(([name,v])=>{const a=document.createElement('span'),b=document.createElement('b');a.textContent=name+'：'+v.reason;b.textContent=v.status;b.className=v.status.toLowerCase();e.append(a,b)})}
-function updateRoute(){const show=location.hash==='#diagnostics';document.body.classList.toggle('diag-mode',show);if(show)window.scrollTo(0,0)}
-document.getElementById('diag-toggle').onclick=()=>{location.hash='diagnostics';updateRoute()};
-document.getElementById('diag-home').onclick=()=>{history.replaceState(null,'',location.pathname+location.search);updateRoute();window.scrollTo(0,0)};
-window.addEventListener('hashchange',updateRoute);updateRoute();
-document.getElementById('diag-copy').onclick=()=>{const txt=Object.entries(diag).map(([k,v])=>v.status+' | '+k+' | '+v.reason).join('\n');navigator.clipboard?.writeText(txt).catch(()=>{})};
+
 function dayKey(d){return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')}
 function msFrom(v){if(typeof v==='number')return v<1e11?v*1000:v;if(typeof v==='string'&&/^\d+$/.test(v))return msFrom(Number(v));const n=Date.parse(v);return Number.isFinite(n)?n:NaN}
 function drawChart(){const now=new Date(),today=dayKey(now);if(lastDay!==today){points.length=0;lastDay=today}document.getElementById('chart-date').textContent=now.toLocaleDateString('zh-TW',{month:'2-digit',day:'2-digit'});const W=350,H=210,L=39,R=37,T=13,B=25,pw=W-L-R,ph=H-T-B;const start=new Date(now.getFullYear(),now.getMonth(),now.getDate()).getTime(),xs=ms=>L+(ms-start)/86400000*pw;const temps=points.map(p=>p.t).filter(Number.isFinite),rhs=points.map(p=>p.rh).filter(Number.isFinite);let tMin=temps.length?Math.floor(Math.min(...temps)-1):15,tMax=temps.length?Math.ceil(Math.max(...temps)+1):35;if(tMax-tMin<4){tMin-=2;tMax+=2}let rhMin=rhs.length?Math.max(0,Math.floor(Math.min(...rhs)-5)):0,rhMax=rhs.length?Math.min(100,Math.ceil(Math.max(...rhs)+5)):100;if(rhMax-rhMin<10){rhMin=Math.max(0,rhMin-5);rhMax=Math.min(100,rhMax+5)}const yt=v=>T+(tMax-v)/(tMax-tMin)*ph,yr=v=>T+(rhMax-v)/(rhMax-rhMin)*ph;let s='';for(let i=0;i<=4;i++){const y=T+i*ph/4;s+=`<line x1="${L}" y1="${y}" x2="${W-R}" y2="${y}" stroke="#567064" stroke-opacity=".5"/><text x="${L-5}" y="${y+3}" text-anchor="end" fill="#ffad69" font-size="9">${(tMax-(tMax-tMin)*i/4).toFixed(0)}</text><text x="${W-R+5}" y="${y+3}" fill="#79c8ff" font-size="9">${(rhMax-(rhMax-rhMin)*i/4).toFixed(0)}</text>`}for(let h=0;h<=24;h+=6)s+=`<text x="${L+h/24*pw}" y="${H-5}" text-anchor="middle" fill="#b0c5ba" font-size="9">${String(h).padStart(2,'0')}:00</text>`;function series(key,fn,color){let out='',part=[];const gap=180000;for(const p of points){if(!Number.isFinite(p[key])){if(part.length>1)out+=`<polyline points="${part.join(' ')}" fill="none" stroke="${color}" stroke-width="2.3"/>`;part=[];continue}if(part.length&&p.ms-(part.lastMs||p.ms)>gap){if(part.length>1)out+=`<polyline points="${part.join(' ')}" fill="none" stroke="${color}" stroke-width="2.3"/>`;part=[]}part.push(`${xs(p.ms).toFixed(2)},${fn(p[key]).toFixed(2)}`);part.lastMs=p.ms}if(part.length>1)out+=`<polyline points="${part.join(' ')}" fill="none" stroke="${color}" stroke-width="2.3"/>`;return out}chart.innerHTML=s+series('t',yt,'#ffad69')+series('rh',yr,'#79c8ff');document.getElementById('chart-message').textContent=historyReady?`已載入 ${points.length} 筆當日歷史紀錄；資料中斷不補值。`:'雲端歷史尚未確認；目前僅顯示本次開頁後收到的即時資料。'}
