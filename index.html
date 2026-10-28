@@ -41,6 +41,40 @@
  #monitor .value.small{font-size:16px}
  #monitor .daily-date{font-size:9px}
 }
+
+/* Mobile one-screen monitor: layout-only; retain sensor, chart and Firebase logic. */
+@media(max-width:600px){
+ main{padding:7px 12px 12px}
+ #home-page>header{margin-bottom:5px}
+ #home-page>header small{font-size:9px}
+ #home-page>header h1{font-size:19px;margin:2px 0 0}
+ #monitor>.grid{gap:5px}
+ #monitor .metric{min-height:0;padding:5px 9px;border-radius:11px}
+ #monitor .metric-label{font-size:12px;line-height:1.15}
+ #monitor .value{font-size:clamp(19px,5vw,23px);margin-top:2px;line-height:1.16}
+ #monitor .value.small{font-size:clamp(15px,4vw,18px);line-height:1.18}
+ #monitor .launch-hint{font-size:9px;margin-top:1px;line-height:1.15}
+ #home-page>nav{margin-top:6px;gap:5px}
+ #home-page>nav button{min-height:32px;padding:5px 0;font-size:11px;border-radius:9px}
+ #monitor>.daily-feature{margin-top:6px;border-radius:12px}
+ #monitor .daily-top{padding:5px 9px 4px;font-size:13px}
+ #monitor .daily-date{font-size:9px}
+ #monitor .daily-photo{height:52px}
+ #monitor .daily-leaf{font-size:37px}
+ #monitor .daily-photo-label{font-size:8px;bottom:4px;left:9px}
+ #monitor .daily-body{padding:6px 9px 7px}
+ #monitor .daily-tag{font-size:10px}
+ #monitor .daily-body h2{font-size:13px;line-height:1.25;margin:3px 0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+ #monitor .daily-body p{font-size:10px;line-height:1.25;margin-bottom:3px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+ #monitor .daily-foot{display:none}
+ #monitor>.chart-card{margin-top:6px;padding:7px 7px 5px}
+ #monitor .chart-head{margin-bottom:3px}
+ #monitor .chart-title{font-size:13px}
+ #monitor .legend{font-size:10px;gap:10px}
+ #monitor .chart-wrap{height:clamp(125px,19vh,165px)}
+ #monitor .chart-message{font-size:10px;min-height:0}
+ #home-page>.dev-auth{margin-top:6px}
+}
 </style>
 </head>
 <body><main>
