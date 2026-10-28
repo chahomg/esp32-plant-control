@@ -1,0 +1,25 @@
+{
+  "started_utc": "2026-10-28T04:20:16.691997+00:00",
+  "finished_utc": "2026-10-28T04:21:07.842767+00:00",
+  "exit_code": 0,
+  "fqbn": "esp32:esp32:esp32s3",
+  "source_unchanged": true,
+  "size_output": [
+    "Sketch uses 1125993 bytes (85%) of program storage space. Maximum is 1310720 bytes.",
+    "Global variables use 47780 bytes (14%) of dynamic memory, leaving 279900 bytes for local variables. Maximum is 327680 bytes."
+  ],
+  "warnings": [
+    "$BUILD_ENV/user/libraries/ArduinoIoTCloud/src/ArduinoIoTCloud.h:105:64: warning: 'void ArduinoIoTCloudClass::addPropertyReal(bool&, String, permissionType, long int, void (*)(), float, void (*)(Property&))' is deprecated: Use addProperty(property, Permission::ReadWrite) instead. [-Wdeprecated-declarations]",
+    "$BUILD_ENV/user/libraries/ArduinoIoTCloud/src/ArduinoIoTCloud.h:105:64: warning: 'void ArduinoIoTCloudClass::addPropertyReal(float&, String, permissionType, long int, void (*)(), float, void (*)(Property&))' is deprecated: Use addProperty(property, Permission::ReadWrite) instead. [-Wdeprecated-declarations]",
+    "$BUILD_ENV/user/libraries/ArduinoIoTCloud/src/ArduinoIoTCloud.h:105:64: warning: 'void ArduinoIoTCloudClass::addPropertyReal(float&, String, permissionType, long int, void (*)(), float, void (*)(Property&))' is deprecated: Use addProperty(property, Permission::ReadWrite) instead. [-Wdeprecated-declarations]",
+    "$BUILD_ENV/user/libraries/ArduinoIoTCloud/src/ArduinoIoTCloudTCP.cpp:164:36: warning: lambda capture initializers only available with -std=c++14 or -std=gnu++14",
+    "$BUILD_ENV/user/libraries/Arduino_CloudUtils/src/cbor/tinycbor/src/cbortojson.c:378:21: warning: initialization discards 'const' qualifier from pointer target type [-Wdiscarded-qualifiers]",
+    "$BUILD_ENV/user/libraries/Arduino_CloudUtils/src/cbor/tinycbor/src/cbortojson.c:381:17: warning: assignment discards 'const' qualifier from pointer target type [-Wdiscarded-qualifiers]"
+  ],
+  "tested_config_commit": "fc71bc7fde5397f80fb1f49ec71c7feb75684371",
+  "clean_install": true,
+  "previous_install_or_build_cache_reused": false,
+  "full_compile_log_sha256": "d45d0d754af6afe2bfc5a979505f21e554da9e0b057a2ac028d5e1acb2b43670",
+  "installed_libraries_match_lock": true,
+  "builtin_tools_match_lock": true
+}
