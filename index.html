@@ -147,6 +147,13 @@ main{width:100%;max-width:720px;padding-inline:var(--screen-pad)}
  #monitor .daily-body{flex:0 0 auto}
  #home-page{min-height:calc(100dvh - 16px)}
 }
+
+/* ARTICLE_FLOATING_READER_20261028: do not push the chart down. */
+.daily-feature{position:relative}
+.public-article[open]{position:fixed!important;inset:0!important;z-index:9999!important;margin:0!important;border:0!important;background:rgba(4,16,11,.85)!important;display:flex!important;align-items:center;justify-content:center;padding:calc(14px + env(safe-area-inset-top,0px)) 12px calc(14px + env(safe-area-inset-bottom,0px))}
+.public-article[open] summary{position:absolute;top:calc(20px + env(safe-area-inset-top,0px));right:20px;z-index:2;background:#315b46;color:#fff;border:1px solid #9bbda4;border-radius:9px;padding:9px 13px;min-height:42px;font-size:0}
+.public-article[open] summary::after{content:"關閉 ×";font-size:15px}
+.public-article[open] .public-article-content{width:min(100%,650px);max-height:calc(100dvh - 32px);overflow-y:auto;overscroll-behavior:contain;background:#203a2c;border:1px solid #73947b;border-radius:15px;padding:60px 20px 24px;box-shadow:0 20px 50px #000a}
 </style>
 </head>
 <body><main>
