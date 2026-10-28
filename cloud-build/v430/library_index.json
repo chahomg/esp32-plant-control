@@ -1,0 +1,647 @@
+{
+  "libraries": [
+    {
+      "name": "RTCZero",
+      "version": "1.6.0",
+      "author": "Arduino",
+      "maintainer": "Arduino <info@arduino.cc>",
+      "sentence": "Allows to use the RTC functionalities. For Arduino Zero, MKRZero and MKR1000 only.",
+      "paragraph": "With this library you can use the RTC peripheral of an Arduino Zero or MKR1000 in order to program actions related to date and time.",
+      "website": "https://www.arduino.cc/en/Reference/RTC",
+      "category": "Timing",
+      "architectures": [
+        "samd"
+      ],
+      "types": [
+        "Arduino"
+      ],
+      "repository": "https://github.com/arduino-libraries/RTCZero.git",
+      "url": "https://downloads.arduino.cc/libraries/github.com/arduino-libraries/RTCZero-1.6.0.zip",
+      "archiveFileName": "RTCZero-1.6.0.zip",
+      "size": 10867,
+      "checksum": "SHA-256:f072128c65911867531989488ec794f176bb2753f601c536eace282292cc7202"
+    },
+    {
+      "name": "WiFi101",
+      "version": "0.16.1",
+      "author": "Arduino",
+      "maintainer": "Arduino <info@arduino.cc>",
+      "sentence": "Network driver for ATMEL WINC1500 module (used on Arduino/Genuino Wifi Shield 101 and MKR1000 boards)",
+      "paragraph": "This library implements a network driver for devices based on the ATMEL WINC1500 wifi module",
+      "website": "https://www.arduino.cc/en/Reference/WiFi101",
+      "category": "Communication",
+      "architectures": [
+        "*"
+      ],
+      "types": [
+        "Arduino"
+      ],
+      "repository": "https://github.com/arduino-libraries/WiFi101.git",
+      "providesIncludes": [
+        "WiFi101.h"
+      ],
+      "url": "https://downloads.arduino.cc/libraries/github.com/arduino-libraries/WiFi101-0.16.1.zip",
+      "archiveFileName": "WiFi101-0.16.1.zip",
+      "size": 267501,
+      "checksum": "SHA-256:3f3a02f749c112019f68037ec9c128b886927529d8c9926abddfc446c0892d40"
+    },
+    {
+      "name": "ArduinoHttpClient",
+      "version": "0.6.2",
+      "author": "Arduino",
+      "maintainer": "Arduino <info@arduino.cc>",
+      "sentence": "[EXPERIMENTAL] Easily interact with web servers from Arduino, using HTTP and WebSockets.",
+      "paragraph": "This library can be used for HTTP (GET, POST, PUT, DELETE) requests to a web server. It also supports exchanging messages with WebSocket servers. Based on Adrian McEwen's HttpClient library.",
+      "website": "https://github.com/arduino-libraries/ArduinoHttpClient",
+      "category": "Communication",
+      "architectures": [
+        "*"
+      ],
+      "types": [
+        "Arduino"
+      ],
+      "repository": "https://github.com/arduino-libraries/ArduinoHttpClient.git",
+      "providesIncludes": [
+        "ArduinoHttpClient.h"
+      ],
+      "url": "https://downloads.arduino.cc/libraries/github.com/arduino-libraries/ArduinoHttpClient-0.6.2.zip",
+      "archiveFileName": "ArduinoHttpClient-0.6.2.zip",
+      "size": 57050,
+      "checksum": "SHA-256:4e1f20d155ac1d4f71a324c0a4aa291c69e98ad7dbfaba7fcbccfd7493458954"
+    },
+    {
+      "name": "MKRWAN",
+      "version": "1.1.2",
+      "author": "Arduino <info@arduino.cc>",
+      "maintainer": "Arduino <info@arduino.cc>",
+      "sentence": "Support library for MKR WAN 1300/1310",
+      "paragraph": "Provides APIs to communicate with LoRa and LoRaWAN networks",
+      "website": "http://github.com/arduino-libraries/MKRWAN",
+      "category": "Communication",
+      "architectures": [
+        "samd",
+        "mbed",
+        "mbed_portenta"
+      ],
+      "types": [
+        "Arduino"
+      ],
+      "repository": "https://github.com/arduino-libraries/MKRWAN.git",
+      "url": "https://downloads.arduino.cc/libraries/github.com/arduino-libraries/MKRWAN-1.1.2.zip",
+      "archiveFileName": "MKRWAN-1.1.2.zip",
+      "size": 130902,
+      "checksum": "SHA-256:92723d4f998c1e37b01b4658eb1ddcc36c737cdc76cc54b8f0a439f3bf1872c7"
+    },
+    {
+      "name": "MKRGSM",
+      "version": "1.5.0",
+      "author": "Arduino",
+      "maintainer": "Arduino <info@arduino.cc>",
+      "sentence": "Enables GSM/GRPS network connection using the Arduino MKR GSM 1400 board.",
+      "paragraph": "Use this library to make/receive voice calls, to send and receive SMS with the u-blox SARA-U201 module.</br>This library also allows you to connect to internet through the GPRS networks. You can either use web Clients and Servers.</br>",
+      "website": "https://www.arduino.cc/en/Reference/MKRGSM",
+      "category": "Communication",
+      "architectures": [
+        "samd"
+      ],
+      "types": [
+        "Arduino"
+      ],
+      "repository": "https://github.com/arduino-libraries/MKRGSM.git",
+      "providesIncludes": [
+        "MKRGSM.h"
+      ],
+      "url": "https://downloads.arduino.cc/libraries/github.com/arduino-libraries/MKRGSM-1.5.0.zip",
+      "archiveFileName": "MKRGSM-1.5.0.zip",
+      "size": 117895,
+      "checksum": "SHA-256:b1c4e9fddb3cf58b7b2b7b1ab6c774f43b6ce6cc3d781387e31b1377eb7e9a02"
+    },
+    {
+      "name": "ArduinoECCX08",
+      "version": "1.4.1",
+      "author": "Arduino",
+      "maintainer": "Arduino <info@arduino.cc>",
+      "sentence": "Arduino Library for the Atmel/Microchip ECC508 and ECC608 crypto chips",
+      "website": "https://github.com/arduino-libraries/ArduinoECCX08",
+      "category": "Communication",
+      "architectures": [
+        "samd",
+        "megaavr",
+        "mbed",
+        "mbed_nano",
+        "mbed_portenta",
+        "mbed_opta",
+        "mbed_giga",
+        "esp32",
+        "zephyr_main"
+      ],
+      "types": [
+        "Arduino"
+      ],
+      "repository": "https://github.com/arduino-libraries/ArduinoECCX08.git",
+      "providesIncludes": [
+        "ArduinoECCX08.h"
+      ],
+      "url": "https://downloads.arduino.cc/libraries/github.com/arduino-libraries/ArduinoECCX08-1.4.1.zip",
+      "archiveFileName": "ArduinoECCX08-1.4.1.zip",
+      "size": 48012,
+      "checksum": "SHA-256:c1f9067fd0ef154534fc15471db7787753f9f87d6ff24e574a90ce66d41b03a8"
+    },
+    {
+      "name": "WiFiNINA",
+      "version": "2.1.1",
+      "author": "Arduino",
+      "maintainer": "Arduino <info@arduino.cc>",
+      "sentence": "Enables network connection (local and Internet) with the Arduino MKR WiFi 1010, Arduino MKR VIDOR 4000, Arduino Uno WiFi Rev.2 and Nano 33 IoT.",
+      "paragraph": "With this library you can instantiate Servers, Clients and send/receive UDP packets through WiFi. The board can connect either to open or encrypted networks (WEP, WPA). The IP address can be assigned statically or through a DHCP. The library can also manage DNS.",
+      "website": "http://www.arduino.cc/en/Reference/WiFiNINA",
+      "category": "Communication",
+      "architectures": [
+        "samd",
+        "mbed_nano",
+        "megaavr",
+        "zephyr_main"
+      ],
+      "types": [
+        "Arduino"
+      ],
+      "repository": "https://github.com/arduino-libraries/WiFiNINA.git",
+      "providesIncludes": [
+        "WiFiNINA.h"
+      ],
+      "dependencies": [
+        {
+          "name": "Arduino_SpiNINA"
+        }
+      ],
+      "url": "https://downloads.arduino.cc/libraries/github.com/arduino-libraries/WiFiNINA-2.1.1.zip",
+      "archiveFileName": "WiFiNINA-2.1.1.zip",
+      "size": 130786,
+      "checksum": "SHA-256:8790a9c431a7867197774d2a6fd5191eabb1b6152ecead7a84eb350b7fd1e87a"
+    },
+    {
+      "name": "ArduinoBearSSL",
+      "version": "1.8.0",
+      "author": "Arduino",
+      "maintainer": "Arduino <info@arduino.cc>",
+      "sentence": "Port of BearSSL to Arduino.",
+      "paragraph": "This library depends on ArduinoECCX08.",
+      "website": "https://github.com/arduino-libraries/ArduinoBearSSL",
+      "category": "Communication",
+      "architectures": [
+        "*"
+      ],
+      "types": [
+        "Arduino"
+      ],
+      "repository": "https://github.com/arduino-libraries/ArduinoBearSSL.git",
+      "providesIncludes": [
+        "ArduinoBearSSL.h"
+      ],
+      "dependencies": [
+        {
+          "name": "Arduino_SecureElement"
+        }
+      ],
+      "url": "https://downloads.arduino.cc/libraries/github.com/arduino-libraries/ArduinoBearSSL-1.8.0.zip",
+      "archiveFileName": "ArduinoBearSSL-1.8.0.zip",
+      "size": 793302,
+      "checksum": "SHA-256:f2523797abfb785fb86f2fd94a0048178d70b6dc65aa02afae198578f6f1966a"
+    },
+    {
+      "name": "ArduinoBLE",
+      "version": "2.1.0",
+      "author": "Arduino",
+      "maintainer": "Arduino <info@arduino.cc>",
+      "sentence": "Enables Bluetooth\u00ae Low Energy connectivity on the Arduino MKR WiFi 1010, Arduino UNO WiFi Rev2, Arduino Nano 33 IoT, Arduino Nano 33 BLE, Nicla Sense ME and UNO R4 WiFi.",
+      "paragraph": "This library supports creating a Bluetooth\u00ae Low Energy peripheral & central mode.",
+      "website": "https://www.arduino.cc/en/Reference/ArduinoBLE",
+      "category": "Communication",
+      "architectures": [
+        "*"
+      ],
+      "types": [
+        "Arduino"
+      ],
+      "repository": "https://github.com/arduino-libraries/ArduinoBLE.git",
+      "providesIncludes": [
+        "ArduinoBLE.h"
+      ],
+      "dependencies": [
+        {
+          "name": "Arduino_SpiNINA"
+        }
+      ],
+      "url": "https://downloads.arduino.cc/libraries/github.com/arduino-libraries/ArduinoBLE-2.1.0.zip",
+      "archiveFileName": "ArduinoBLE-2.1.0.zip",
+      "size": 242179,
+      "checksum": "SHA-256:93c4d736cdbf187b72d4921a8eb12d94627dd1aff21f996ac40d8ccbe3af6cc2"
+    },
+    {
+      "name": "MKRNB",
+      "version": "1.6.0",
+      "author": "Arduino",
+      "maintainer": "Arduino <info@arduino.cc>",
+      "sentence": "Enables NB/GRPS network connection using the Arduino MKR NB 1500 board.",
+      "paragraph": "This library also allows you to connect to internet through NarrowBand IoT or LTE Cat M1 networks.</br>",
+      "website": "http://www.arduino.cc/en/Reference/MKRNB",
+      "category": "Communication",
+      "architectures": [
+        "samd"
+      ],
+      "types": [
+        "Arduino"
+      ],
+      "repository": "https://github.com/arduino-libraries/MKRNB.git",
+      "providesIncludes": [
+        "MKRNB.h"
+      ],
+      "url": "https://downloads.arduino.cc/libraries/github.com/arduino-libraries/MKRNB-1.6.0.zip",
+      "archiveFileName": "MKRNB-1.6.0.zip",
+      "size": 90264,
+      "checksum": "SHA-256:b3689cabe11296c0a8264589a78f4d4c63568bbd8462208c5e3e6dd7ab4c2fb9"
+    },
+    {
+      "name": "ArduinoMqttClient",
+      "version": "0.1.8",
+      "author": "Arduino",
+      "maintainer": "Arduino <info@arduino.cc>",
+      "sentence": "[BETA] Allows you to send and receive MQTT messages using Arduino.",
+      "website": "https://github.com/arduino-libraries/ArduinoMqttClient",
+      "category": "Communication",
+      "architectures": [
+        "*"
+      ],
+      "types": [
+        "Arduino"
+      ],
+      "repository": "https://github.com/arduino-libraries/ArduinoMqttClient.git",
+      "providesIncludes": [
+        "ArduinoMqttClient.h"
+      ],
+      "url": "https://downloads.arduino.cc/libraries/github.com/arduino-libraries/ArduinoMqttClient-0.1.8.zip",
+      "archiveFileName": "ArduinoMqttClient-0.1.8.zip",
+      "size": 34829,
+      "checksum": "SHA-256:97a19eab1ecb74bcdd6311cd5873dd15d265bd4f5f8a4a45fa0ac0871847c936"
+    },
+    {
+      "name": "ArduinoIoTCloud",
+      "version": "2.10.0",
+      "author": "Arduino",
+      "maintainer": "Arduino <info@arduino.cc>",
+      "sentence": "This library allows connecting to the Arduino IoT Cloud service.",
+      "paragraph": "It provides a ConnectionManager to handle connection/disconnection, property-change updates and events callbacks. The supported boards are MKR GSM, MKR1000 and WiFi101.",
+      "website": "https://github.com/arduino-libraries/ArduinoIoTCloud",
+      "category": "Communication",
+      "architectures": [
+        "mbed",
+        "samd",
+        "esp8266",
+        "mbed_nano",
+        "mbed_portenta",
+        "mbed_nicla",
+        "esp32",
+        "mbed_opta",
+        "mbed_giga",
+        "renesas_portenta",
+        "renesas_uno",
+        "mbed_edge",
+        "stm32",
+        "zephyr",
+        "zephyr_main"
+      ],
+      "types": [
+        "Arduino"
+      ],
+      "repository": "https://github.com/arduino-libraries/ArduinoIoTCloud.git",
+      "providesIncludes": [
+        "ArduinoIoTCloud.h"
+      ],
+      "dependencies": [
+        {
+          "name": "Arduino_ConnectionHandler"
+        },
+        {
+          "name": "Arduino_DebugUtils"
+        },
+        {
+          "name": "Arduino_SecureElement"
+        },
+        {
+          "name": "ArduinoMqttClient"
+        },
+        {
+          "name": "ArduinoECCX08"
+        },
+        {
+          "name": "RTCZero"
+        },
+        {
+          "name": "Adafruit SleepyDog Library"
+        },
+        {
+          "name": "ArduinoHttpClient"
+        },
+        {
+          "name": "Arduino_CloudUtils"
+        },
+        {
+          "name": "ArduinoBearSSL"
+        },
+        {
+          "name": "Arduino_NetworkConfigurator"
+        }
+      ],
+      "url": "https://downloads.arduino.cc/libraries/github.com/arduino-libraries/ArduinoIoTCloud-2.10.0.zip",
+      "archiveFileName": "ArduinoIoTCloud-2.10.0.zip",
+      "size": 252799,
+      "checksum": "SHA-256:57c97ba28916ae85cfdbcaac4a5bb9d98bf23dbb4d89782da32739ec93af3c38"
+    },
+    {
+      "name": "Adafruit SleepyDog Library",
+      "version": "1.8.4",
+      "author": "Adafruit",
+      "maintainer": "Adafruit <info@adafruit.com>",
+      "sentence": "Arduino library to use the watchdog timer for system reset and low power sleep.",
+      "paragraph": "Arduino library to use the watchdog timer for system reset and low power sleep.",
+      "website": "https://github.com/adafruit/Adafruit_SleepyDog",
+      "category": "Other",
+      "architectures": [
+        "avr",
+        "samd",
+        "nrf52",
+        "teensy",
+        "esp32",
+        "esp8266",
+        "rp2040",
+        "rp2350"
+      ],
+      "types": [
+        "Contributed"
+      ],
+      "repository": "https://github.com/adafruit/Adafruit_SleepyDog.git",
+      "url": "https://downloads.arduino.cc/libraries/github.com/adafruit/Adafruit_SleepyDog_Library-1.8.4.zip",
+      "archiveFileName": "Adafruit_SleepyDog_Library-1.8.4.zip",
+      "size": 52390,
+      "checksum": "SHA-256:45bd8053814622287a14881729cf181935a32903dd7ae72883da5690c5544a86"
+    },
+    {
+      "name": "Arduino_DebugUtils",
+      "version": "1.5.0",
+      "author": "Arduino",
+      "maintainer": "Arduino <info@arduino.cc>",
+      "sentence": "Debugging module with different debug levels, timestamps and printf-style output.",
+      "paragraph": "This class provides functionality useful for debugging sketches via printf-style statements.",
+      "website": "https://github.com/arduino-libraries/Arduino_DebugUtils",
+      "category": "Communication",
+      "architectures": [
+        "*"
+      ],
+      "types": [
+        "Arduino"
+      ],
+      "repository": "https://github.com/arduino-libraries/Arduino_DebugUtils.git",
+      "url": "https://downloads.arduino.cc/libraries/github.com/arduino-libraries/Arduino_DebugUtils-1.5.0.zip",
+      "archiveFileName": "Arduino_DebugUtils-1.5.0.zip",
+      "size": 13068,
+      "checksum": "SHA-256:dc203d35642c69b01abebd1b6fb2b14df5309200ad34bf8c95f6f4c9b3ae3568"
+    },
+    {
+      "name": "Arduino_ConnectionHandler",
+      "version": "1.3.0",
+      "author": "Ubi de Feo, Cristian Maglie, Andrea Catozzi, Alexander Entinger et al.",
+      "maintainer": "Arduino <info@arduino.cc>",
+      "sentence": "Arduino Library for network connection management (WiFi, GSM, NB, [Ethernet])",
+      "paragraph": "Originally part of ArduinoIoTCloud",
+      "website": "https://github.com/arduino-libraries/Arduino_ConnectionHandler",
+      "category": "Communication",
+      "architectures": [
+        "samd",
+        "esp32",
+        "esp8266",
+        "mbed",
+        "megaavr",
+        "mbed_nano",
+        "mbed_portenta",
+        "mbed_nicla",
+        "mbed_opta",
+        "mbed_giga",
+        "renesas_portenta",
+        "renesas_uno",
+        "mbed_edge",
+        "stm32",
+        "rp2040"
+      ],
+      "types": [
+        "Arduino"
+      ],
+      "repository": "https://github.com/arduino-libraries/Arduino_ConnectionHandler.git",
+      "dependencies": [
+        {
+          "name": "Arduino_DebugUtils"
+        },
+        {
+          "name": "WiFi101"
+        },
+        {
+          "name": "WiFiNINA"
+        },
+        {
+          "name": "MKRGSM"
+        },
+        {
+          "name": "MKRNB"
+        },
+        {
+          "name": "MKRWAN"
+        }
+      ],
+      "url": "https://downloads.arduino.cc/libraries/github.com/arduino-libraries/Arduino_ConnectionHandler-1.3.0.zip",
+      "archiveFileName": "Arduino_ConnectionHandler-1.3.0.zip",
+      "size": 50179,
+      "checksum": "SHA-256:27ce31749b978defb97c7e1a70d1297dcbab65c53bf8da4f580b8a054694c8fd"
+    },
+    {
+      "name": "Arduino_SecureElement",
+      "version": "1.0.1",
+      "author": "Arduino",
+      "maintainer": "Arduino <info@arduino.cc>",
+      "sentence": "Arduino Library for the Atmel/Microchip ECC508 and ECC608 and NXP SE050 crypto chips",
+      "website": "https://github.com/arduino-libraries/Arduino_SecureElement",
+      "category": "Communication",
+      "architectures": [
+        "*"
+      ],
+      "types": [
+        "Arduino"
+      ],
+      "repository": "https://github.com/arduino-libraries/Arduino_SecureElement.git",
+      "providesIncludes": [
+        "Arduino_SecureElement.h"
+      ],
+      "dependencies": [
+        {
+          "name": "ArduinoECCX08"
+        },
+        {
+          "name": "Arduino_SE05X"
+        }
+      ],
+      "url": "https://downloads.arduino.cc/libraries/github.com/arduino-libraries/Arduino_SecureElement-1.0.1.zip",
+      "archiveFileName": "Arduino_SecureElement-1.0.1.zip",
+      "size": 36925,
+      "checksum": "SHA-256:133cab8dd832e3b515f4950580803b30f4838d1fcf52185c808fd2b3b89e0e7c"
+    },
+    {
+      "name": "Arduino_CloudUtils",
+      "version": "1.2.1",
+      "author": "Arduino",
+      "maintainer": "Arduino <info@arduino.cc>",
+      "sentence": "Utility module for features related to ArduinoCloud and Cloud in general",
+      "paragraph": "This module contains utility classes/function that may be used in cloud related projects",
+      "website": "https://github.com/arduino-libraries/Arduino_CloudUtils",
+      "category": "Communication",
+      "architectures": [
+        "*"
+      ],
+      "types": [
+        "Arduino"
+      ],
+      "repository": "https://github.com/arduino-libraries/Arduino_CloudUtils.git",
+      "url": "https://downloads.arduino.cc/libraries/github.com/arduino-libraries/Arduino_CloudUtils-1.2.1.zip",
+      "archiveFileName": "Arduino_CloudUtils-1.2.1.zip",
+      "size": 298996,
+      "checksum": "SHA-256:2d2bf179940ee8ec364c14684ec5cb7c81a4e0ac6abea2b45a895e9981668f81"
+    },
+    {
+      "name": "Arduino_KVStore",
+      "version": "1.0.1",
+      "author": "Arduino",
+      "maintainer": "Arduino <info@arduino.cc>",
+      "sentence": "Arduino library for handling storage in a platform independent way",
+      "website": "https://github.com/arduino-libraries/Arduino_KVStore",
+      "category": "Data Storage",
+      "architectures": [
+        "mbed",
+        "samd",
+        "esp8266",
+        "mbed_nano",
+        "mbed_portenta",
+        "mbed_nicla",
+        "esp32",
+        "mbed_opta",
+        "mbed_giga",
+        "renesas_portenta",
+        "renesas_uno",
+        "mbed_edge"
+      ],
+      "types": [
+        "Arduino"
+      ],
+      "repository": "https://github.com/arduino-libraries/Arduino_KVStore.git",
+      "providesIncludes": [
+        "Arduino_KVStore.h"
+      ],
+      "url": "https://downloads.arduino.cc/libraries/github.com/arduino-libraries/Arduino_KVStore-1.0.1.zip",
+      "archiveFileName": "Arduino_KVStore-1.0.1.zip",
+      "size": 32934,
+      "checksum": "SHA-256:a054e3de3559782d433973d3daa20ba6a3a8f575f02e7ce90c5867b66486e9ff"
+    },
+    {
+      "name": "Arduino_NetworkConfigurator",
+      "version": "0.5.1",
+      "author": "Arduino",
+      "maintainer": "Arduino <info@arduino.cc>",
+      "sentence": "This library allows to configure and update the network settings of a ConnectionHandler instance.",
+      "paragraph": "It provides a set of Agents to handle the transmission of network credentials between the board and an user device for configuring the Arduino_ConnectionHandler. The library stores the provided configurations on non volatile memory to keep them persistent.",
+      "website": "https://github.com/arduino-libraries/Arduino_NetworkConfigurator",
+      "category": "Communication",
+      "architectures": [
+        "mbed",
+        "samd",
+        "mbed_portenta",
+        "mbed_nicla",
+        "mbed_opta",
+        "mbed_giga",
+        "renesas_portenta",
+        "renesas_uno"
+      ],
+      "types": [
+        "Arduino"
+      ],
+      "repository": "https://github.com/arduino-libraries/Arduino_NetworkConfigurator.git",
+      "providesIncludes": [
+        "Arduino_NetworkConfigurator.h"
+      ],
+      "dependencies": [
+        {
+          "name": "Arduino_ConnectionHandler"
+        },
+        {
+          "name": "Arduino_DebugUtils"
+        },
+        {
+          "name": "Arduino_CloudUtils"
+        },
+        {
+          "name": "ArduinoBLE"
+        },
+        {
+          "name": "Arduino_KVStore"
+        }
+      ],
+      "url": "https://downloads.arduino.cc/libraries/github.com/arduino-libraries/Arduino_NetworkConfigurator-0.5.1.zip",
+      "archiveFileName": "Arduino_NetworkConfigurator-0.5.1.zip",
+      "size": 80050,
+      "checksum": "SHA-256:aea141ddb980af4528abc8308bb591069df777b5d328f683d5a95af70334c1a7"
+    },
+    {
+      "name": "Arduino_SpiNINA",
+      "version": "0.0.2",
+      "author": "Arduino",
+      "maintainer": "Arduino <info@arduino.cc>",
+      "sentence": "Spi driver for NINA modules",
+      "paragraph": "With this library you can send and receive messages through the SPI interface.",
+      "website": "http://www.arduino.cc/en/Reference/Arduino_SpiNINA",
+      "category": "Communication",
+      "architectures": [
+        "samd",
+        "mbed_nano",
+        "megaavr"
+      ],
+      "types": [
+        "Arduino"
+      ],
+      "repository": "https://github.com/arduino-libraries/Arduino_SpiNINA.git",
+      "providesIncludes": [
+        "Arduino_SpiNINA.h"
+      ],
+      "url": "https://downloads.arduino.cc/libraries/github.com/arduino-libraries/Arduino_SpiNINA-0.0.2.zip",
+      "archiveFileName": "Arduino_SpiNINA-0.0.2.zip",
+      "size": 14349,
+      "checksum": "SHA-256:55d57f5de4b20bc21d3b5850660d0a58a4f85967c02f9ee60199a37497b83ecd"
+    },
+    {
+      "name": "Arduino_SE05X",
+      "version": "0.0.2",
+      "author": "Arduino",
+      "maintainer": "Arduino <info@arduino.cc>",
+      "sentence": "Arduino Library for the NXP SE05X crypto chips",
+      "website": "https://github.com/arduino-libraries/Arduino_SE05X/",
+      "category": "Communication",
+      "architectures": [
+        "renesas_portenta",
+        "zephyr_main",
+        "mbed_portenta"
+      ],
+      "types": [
+        "Arduino"
+      ],
+      "repository": "https://github.com/arduino-libraries/Arduino_SE05X.git",
+      "url": "https://downloads.arduino.cc/libraries/github.com/arduino-libraries/Arduino_SE05X-0.0.2.zip",
+      "archiveFileName": "Arduino_SE05X-0.0.2.zip",
+      "size": 92892,
+      "checksum": "SHA-256:1476ad8f872e8f1947552bc80c9bd9b2d9b20fa15117eaf96fd771b7500e8bbe"
+    }
+  ]
+}
