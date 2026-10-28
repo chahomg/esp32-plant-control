@@ -75,6 +75,19 @@
  #monitor .chart-message{font-size:10px;min-height:0}
  #home-page>.dev-auth{margin-top:6px}
 }
+
+/* Responsive viewport allocation: daily image fills remaining mobile space. */
+@media(max-width:600px){
+ html,body{margin:0;min-height:100%;overflow:hidden}
+ main{height:100vh;height:100dvh;max-height:100dvh;overflow:hidden;display:flex;flex-direction:column;padding-bottom:calc(6px + env(safe-area-inset-bottom,0px))}
+ #home-page{height:100%;min-height:0;display:flex;flex-direction:column;overflow-y:auto;overscroll-behavior:contain}
+ #home-page>header,#monitor>.grid,#home-page>nav,#monitor>.chart-card{flex:0 0 auto}
+ #monitor>.daily-feature{flex:1 1 auto;min-height:150px;display:flex;flex-direction:column;overflow:hidden}
+ #monitor .daily-top,#monitor .daily-body{flex:0 0 auto}
+ #monitor .daily-photo{height:auto;min-height:40px;flex:1 1 auto}
+ #monitor .chart-wrap{height:clamp(120px,17dvh,150px)}
+ #home-page>.dev-auth{flex:0 0 auto}
+}
 </style>
 </head>
 <body><main>
