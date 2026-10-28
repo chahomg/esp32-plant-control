@@ -128,6 +128,25 @@ main{width:100%;max-width:720px;padding-inline:var(--screen-pad)}
  #monitor>.daily-feature{min-height:160px}
 }
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
+/* Public journal reading: independent from Firebase authentication. */
+.public-article{margin-top:10px;border-top:1px solid #456b53}
+.public-article summary{list-style:none;cursor:pointer;padding:12px 4px 3px;color:#b5edc5;font-size:14px;font-weight:700;min-height:42px;display:flex;align-items:center;justify-content:space-between}
+.public-article summary::-webkit-details-marker{display:none}
+.public-article summary::after{content:"＋";font-size:19px}
+.public-article[open] summary::after{content:"－"}
+.public-article-content{padding:10px 2px 2px;line-height:1.75;color:#e1eee5}
+.public-article-content h3{font-size:17px;margin:0 0 10px}
+.public-article-content h4{font-size:14px;margin:14px 0 5px;color:#b9e9c6}
+.public-article-content p{font-size:13px;line-height:1.75;margin:0 0 9px}
+.public-article-content .article-disclaimer{font-size:11px;color:#a6c6b0;border-top:1px solid #456b53;padding-top:9px}
+@media(max-width:600px){
+ #monitor.active{display:contents}
+ #monitor>.daily-feature{min-height:0;flex:1 1 auto;overflow:visible}
+ #monitor .daily-photo{min-height:65px}
+ #monitor .daily-body{flex:0 0 auto}
+ #home-page{min-height:calc(100dvh - 16px)}
+}
 </style>
 </head>
 <body><main>
@@ -143,7 +162,7 @@ main{width:100%;max-width:720px;padding-inline:var(--screen-pad)}
 <div class="daily-feature" aria-label="每日鹿角蕨資訊">
   <div class="daily-top"><span>每日鹿角蕨焦點</span><span class="daily-date">每日更新 · 版面預覽</span></div>
   <div class="daily-photo" role="img" aria-label="鹿角蕨專業資訊封面示意"><div class="daily-leaf">🌿</div><div class="daily-photo-label">PLATYCERIUM JOURNAL</div></div>
-  <div class="daily-body"><div class="daily-tag">環境與養護 · 專業知識</div><h2>為什麼同一品種的鹿角蕨，孢子葉形態可能不同？</h2><p>從光照、濕度與培育環境出發，認識影響鹿角蕨生長形態的因素。這裡將每日呈現新文章、品種知識與栽培研究。</p><div class="daily-foot">今日焦點展示 · 正式內容來源將於上線前核對</div></div>
+  <div class="daily-body"><div class="daily-tag">環境與養護 · 專業知識</div><h2>為什麼同一品種的鹿角蕨，孢子葉形態可能不同？</h2><p>從光照、濕度與培育環境出發，認識影響鹿角蕨生長形態的因素。這裡將每日呈現新文章、品種知識與栽培研究。</p><div class="daily-foot">公開閱讀專區 · 不需 Firebase 登入</div><details class="public-article" id="public-article"><summary>閱讀完整文章（公開瀏覽）</summary><div class="public-article-content"><h3>為什麼同一品種的鹿角蕨，孢子葉形態可能不同？</h3><p>即使是相同品種，鹿角蕨的孢子葉也可能因生長環境、植株年齡與個體差異而呈現不同的長度、角度和分岔方式。</p><h4>光照與葉片生長</h4><p>光照強度、每日累積光量（DLI）及光照時間，都可能影響植株的生長狀態。但不能單憑孢子葉長短，就認定某一株接受的光量較高或較低。</p><h4>濕度與水分供應</h4><p>空氣濕度、蒸氣壓差（VPD）、基質含水狀態和通風條件，會共同影響葉片的水分平衡。觀察形態時，最好同步記錄這些條件。</p><h4>如何比較不同環境？</h4><p>可以記錄每片新葉的長度、分岔數、展開角度與生長日期，並對照同期的 PPFD、DLI、溫度、濕度及 VPD。多次觀察才能判斷是否存在穩定的環境與形態關係。</p><p class="article-disclaimer">這是公開示範文章，供測試無登入閱讀功能；內容為一般研究方向說明，不代表已證實的鹿角蕨形態控制結論。</p></div></details></div>
 </div><div class="card chart-card"><div class="chart-head"><span class="chart-title">今日溫濕度曲線</span><span class="chart-note" id="chart-date"></span></div><div class="legend"><span><i class="swatch" style="background:var(--temp)"></i>溫度 °C（左軸）</span><span><i class="swatch" style="background:var(--rh)"></i>濕度 %（右軸）</span></div><div class="chart-wrap"><svg id="chart" viewBox="0 0 350 210" role="img" aria-label="今日溫度與濕度雙軸曲線"></svg></div><p id="chart-message" class="chart-message">等待即時資料；歷史資料尚未連接。</p></div></section>
 <section id="history"><div class="card"><div class="chart-title">MicroSD／Firebase 每日紀錄</div><p class="status">此雲端頁面讀取 Firebase 歷史資料鏡像，不會直接連接區域網路 MicroSD。ESP32 必須另外把每日紀錄同步到 Firebase。</p><label for="history-date">選擇日期</label> <input id="history-date" type="date"><button id="history-refresh" class="action" type="button">讀取日期紀錄</button><p id="history-status" class="status">等待連線。</p><div class="chart-title" style="margin:12px 0 4px">歷史溫濕度曲線</div><div class="legend"><span><i class="swatch" style="background:var(--temp)"></i>溫度 °C（左軸）</span><span><i class="swatch" style="background:var(--rh)"></i>濕度 %（右軸）</span></div><div class="chart-wrap"><svg id="history-climate-chart" viewBox="0 0 350 210" role="img" aria-label="所選日期歷史溫濕度雙軸曲線"></svg></div><p id="history-climate-status" class="chart-message">尚未讀取歷史溫濕度。</p><div class="chart-title" style="margin:12px 0 4px">PAR 原始值曲線（待校準）</div><div class="chart-wrap"><svg id="par-chart" viewBox="0 0 350 210" aria-label="每日 PAR 原始值曲線"></svg></div><p class="status">PAR 為原始值，尚未校正為 PPFD；無資料時不補值。</p></div></section>
 <section id="control"><div class="card placeholder">設備控制尚未啟用，避免誤操作設備。</div></section>
