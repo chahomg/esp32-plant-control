@@ -165,15 +165,42 @@ main{width:100%;max-width:720px;padding-inline:var(--screen-pad)}
 #monitor .public-article[open]{position:absolute!important;inset:0!important;display:block!important;height:100%!important;max-height:100%!important;overflow:hidden!important}
 #monitor .public-article[open] summary{position:absolute!important;top:0!important;left:0!important;right:0!important;height:52px!important;min-height:52px!important;box-sizing:border-box!important}
 #monitor .public-article[open] .public-article-content{position:absolute!important;top:52px!important;bottom:0!important;left:0!important;right:0!important;display:block!important;width:auto!important;height:auto!important;max-height:none!important;min-height:0!important;flex:none!important;overflow-y:scroll!important;overflow-x:hidden!important;-webkit-overflow-scrolling:touch!important;touch-action:pan-y!important;overscroll-behavior-y:contain!important}
+
+/* WEB-BOTANICAL-01 · 2026-10-29 · visual changes only */
+:root{--temp:#ff794f;--rh:#62c5ff;--bg:#123c30;--card:#244f40}
+body{background:radial-gradient(ellipse at 0% 0%,#44835b88,transparent 48%),radial-gradient(ellipse at 100% 55%,#268b7470,transparent 55%),linear-gradient(155deg,#194d3a,#102c28);background-attachment:fixed}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20300%20220%22%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22%23b4e8a3%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M147%20207C140%20170%20124%20145%20106%20124C83%2098%2063%2077%2059%2038M106%20124C99%2086%20111%2058%20102%2015M106%20124C75%20116%2037%20103%2015%2077M59%2038L36%2015M59%2038L80%2010M102%2055L128%2029M47%20100L26%20114M147%20207C155%20162%20175%20131%20200%20108C228%2082%20241%2052%20239%2017M200%20108C193%2078%20191%2057%20204%2029M200%20108C238%20109%20265%2093%20288%2069M239%2048L266%2022M204%2051L179%2023M262%2097L281%20110%22%20stroke-width%3D%2213%22%2F%3E%3Cpath%20d%3D%22M146%20204C126%20196%20113%20181%20117%20164C120%20148%20139%20144%20148%20155C160%20139%20181%20145%20182%20163C183%20182%20161%20200%20146%20204Z%22%20fill%3D%22%236ab784%22%20stroke%3D%22%2387c999%22%20stroke-width%3D%222%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");background-repeat:repeat;background-size:340px 270px;opacity:.045;z-index:0}
+main{position:relative;z-index:1}
+#home-page>header{position:relative;isolation:isolate;overflow:hidden;padding:13px 14px 14px;border:1px solid #a5db9b44;border-radius:18px;background:linear-gradient(115deg,#326548,#1c5044);box-shadow:0 6px 20px #041d191f}
+#home-page>header::after{content:"";position:absolute;right:-7px;top:-28px;width:150px;height:145px;background:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20300%20220%22%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22%23b4e8a3%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M147%20207C140%20170%20124%20145%20106%20124C83%2098%2063%2077%2059%2038M106%20124C99%2086%20111%2058%20102%2015M106%20124C75%20116%2037%20103%2015%2077M59%2038L36%2015M59%2038L80%2010M102%2055L128%2029M47%20100L26%20114M147%20207C155%20162%20175%20131%20200%20108C228%2082%20241%2052%20239%2017M200%20108C193%2078%20191%2057%20204%2029M200%20108C238%20109%20265%2093%20288%2069M239%2048L266%2022M204%2051L179%2023M262%2097L281%20110%22%20stroke-width%3D%2213%22%2F%3E%3Cpath%20d%3D%22M146%20204C126%20196%20113%20181%20117%20164C120%20148%20139%20144%20148%20155C160%20139%20181%20145%20182%20163C183%20182%20161%20200%20146%20204Z%22%20fill%3D%22%236ab784%22%20stroke%3D%22%2387c999%22%20stroke-width%3D%222%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E") center/contain no-repeat;opacity:.24;z-index:-1;pointer-events:none}
+#home-page>header small{color:#d0e8b8;letter-spacing:.13em;font-size:9px}
+#home-page>header h1{color:#f6ffe9}
+.botanical-subtitle{color:#d0e9d5;font-size:10px;letter-spacing:.05em;margin-top:4px}
+.card{border:1px solid #96c6a52e;box-shadow:0 3px 12px #061d1b24}
+.temp-card{background:linear-gradient(135deg,#543d30,#344b38);border-color:#ff9b604f}
+.humidity-card{background:linear-gradient(135deg,#204c60,#244e47);border-color:#62c5ff4f}
+#temperature,.temp-card .metric-label{color:var(--temp)}
+#humidity,.humidity-card .metric-label{color:var(--rh)}
+.temp-card .metric-label,.humidity-card .metric-label{display:flex;align-items:center;gap:6px}
+.sensor-icon{display:inline-block;width:19px;height:19px;flex:0 0 19px;overflow:visible}
+nav button{background:#356b53;border:1px solid #9bd5a62e}
+nav button.active{background:#b4df8c;color:#193c2b}
+.daily-feature{border-color:#92c68c66;background:#244a37}
+.daily-photo{background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20300%20220%22%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22%23b4e8a3%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M147%20207C140%20170%20124%20145%20106%20124C83%2098%2063%2077%2059%2038M106%20124C99%2086%20111%2058%20102%2015M106%20124C75%20116%2037%20103%2015%2077M59%2038L36%2015M59%2038L80%2010M102%2055L128%2029M47%20100L26%20114M147%20207C155%20162%20175%20131%20200%20108C228%2082%20241%2052%20239%2017M200%20108C193%2078%20191%2057%20204%2029M200%20108C238%20109%20265%2093%20288%2069M239%2048L266%2022M204%2051L179%2023M262%2097L281%20110%22%20stroke-width%3D%2213%22%2F%3E%3Cpath%20d%3D%22M146%20204C126%20196%20113%20181%20117%20164C120%20148%20139%20144%20148%20155C160%20139%20181%20145%20182%20163C183%20182%20161%20200%20146%20204Z%22%20fill%3D%22%236ab784%22%20stroke%3D%22%2387c999%22%20stroke-width%3D%222%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E"),radial-gradient(ellipse at 50% 60%,#588e57,#1b5743 65%,#16443a);background-size:auto 115%,cover;background-position:center;background-repeat:no-repeat}
+.daily-leaf{visibility:hidden}
+.daily-photo-label{color:#efffe3;background:#173e3199;padding:3px 6px;border-radius:4px}
+#monitor .chart-card{background:#203e33}
+@media(max-width:360px){#home-page>header{padding:10px}.sensor-icon{width:17px;height:17px;flex-basis:17px}}
+
 </style>
 </head>
 <body><main>
 <div id="home-page">
-<header><small>PLATYCERIUM RESEARCH SYSTEM</small><h1>鹿角蕨環境研究中心</h1></header>
+<header><small>PLATYCERIUM RESEARCH SYSTEM</small><h1>鹿角蕨環境研究中心</h1><div class="botanical-subtitle">鹿角蕨專用 · 溫濕度與光環境觀測</div></header>
 
 <section id="monitor" class="active"><div class="grid">
-<div class="card metric"><div class="metric-label">溫度</div><div id="temperature" class="value">-- °C</div></div>
-<div class="card metric"><div class="metric-label">相對濕度</div><div id="humidity" class="value">-- %</div></div>
+<div class="card metric temp-card"><div class="metric-label"><svg class="sensor-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4" fill="currentColor"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>溫度</div><div id="temperature" class="value">-- °C</div></div>
+<div class="card metric humidity-card"><div class="metric-label"><svg class="sensor-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C10 6 5 10 5 15a7 7 0 0 0 14 0c0-5-5-9-7-13Z" fill="currentColor"/><path d="M8 15a4 4 0 0 0 3 4" fill="none" stroke="white" stroke-opacity=".8" stroke-width="1.5" stroke-linecap="round"/></svg>相對濕度</div><div id="humidity" class="value">-- %</div></div>
 <div class="card metric"><div class="metric-label">VPD</div><div id="vpd" class="value">-- kPa</div></div>
 <button class="card metric ppfd-launch" id="ppfd-launch" type="button" aria-label="開啟 PPFD 與 DLI 光照分析頁"><div class="metric-label">PPFD <span class="launch-arrow">↗</span></div><div id="ppfd" class="value small">未連接</div><div class="launch-hint">查看光照曲線與 DLI</div></button>
 </div>
