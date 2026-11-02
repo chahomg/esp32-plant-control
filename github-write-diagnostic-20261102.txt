@@ -1,3 +1,2 @@
 GitHub write diagnostic
-Purpose: test connector create/read/delete.
-No production HTML changes.
+Update PASS
