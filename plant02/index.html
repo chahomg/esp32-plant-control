@@ -280,6 +280,22 @@ function message(text,showLogin=false,isError=false){notice.classList.toggle('hi
 function parseRecords(raw,day){const result=[];const values=Array.isArray(raw)?raw:Object.values(raw||{});window.__historyTimeMode='STANDARD_UTC_EPOCH';for(const v of values){if(!v||typeof v!=='object')continue;const ms=msFrom(v.received_at??v.timestamp_ms??v.timestamp??v.ts??v.time);if(!Number.isFinite(ms)||dayKey(new Date(ms))!==day)continue;const t=Number(v.temperature_c??v.temperature),rh=Number(v.humidity_rh??v.humidity),par=Number(v.par_raw_reg0??v.par_raw);result.push({ms,t:Number.isFinite(t)?t:NaN,rh:Number.isFinite(rh)?rh:NaN,par:(v.par_raw_valid===true&&Number.isFinite(par))?par:NaN})}return result.sort((a,b)=>a.ms-b.ms)}
 try{
  const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getDatabase(app),provider=new GoogleAuthProvider();let unsubs=[],currentUser=null;
+ // On-demand readback: compare Firebase server values against current manual form without writing.
+ window.addEventListener('message',async event=>{
+  if(event.origin!==location.origin||event.source!==document.querySelector('#control iframe')?.contentWindow||event.data?.type!=='plant02-control-verify')return;
+  const requestId=event.data.request_id;
+  const reply=(ok,error)=>event.source.postMessage({type:'plant02-control-verify-result',request_id:requestId,ok,error},event.origin);
+  if(!currentUser){reply(false,'尚未登入 Firebase');return}
+  try{
+   const snap=await get(ref(db,'plantGatewayV1/controlDrafts/PLANT-02'));
+   if(!snap.exists()){reply(false,'資料庫尚無 PLANT-02 控制設定');return}
+   const v=snap.val(),e=event.data.expected;
+   const keys=['mist','circulation_fan','ventilation_fan'];
+   const equalDevices=(a,b)=>keys.every(k=>typeof a?.[k]==='boolean'&&a[k]===b?.[k]);
+   const match=v.mode==='manual'&&v.temperature?.high_limit===e?.temperature?.high_limit&&v.humidity?.low_limit===e?.humidity?.low_limit&&v.humidity?.high_limit===e?.humidity?.high_limit&&equalDevices(v.temperature?.devices,e?.temperature?.devices)&&equalDevices(v.humidity?.devices,e?.humidity?.devices)&&typeof v.request_id==='string'&&typeof v.updated_at==='number';
+   reply(match,match?null:'Firebase 已讀取，但數值、設備選擇或設定欄位與目前畫面不一致');
+  }catch(err){reply(false,err.code||err.message||'讀取失敗')}
+ });
  // PLANT-02 control draft: authenticated Firebase write and independent readback; never sends device commands.
  window.addEventListener('message',async event=>{
   if(event.origin!==location.origin||event.source!==document.querySelector('#control iframe')?.contentWindow||event.data?.type!=='plant02-control-save')return;
