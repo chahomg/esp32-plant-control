@@ -310,7 +310,7 @@ try{
    const data={...c,request_id:requestId,updated_at:serverTimestamp(),status:'draft_only'};
    await set(p,data);
    const snapshot=await get(p);const read=snapshot.val();
-   if(!read||read.request_id!==requestId||read.temperature?.high_limit!==c.temperature.high_limit||read.humidity?.low_limit!==c.humidity.low_limit||read.humidity?.high_limit!==c.humidity.high_limit||JSON.stringify(read.temperature.devices)!==JSON.stringify(c.temperature.devices)||JSON.stringify(read.humidity.devices)!==JSON.stringify(c.humidity.devices))throw Error('讀回資料與上傳內容不一致');
+   if(!read||read.request_id!==requestId||read.temperature?.high_limit!==c.temperature.high_limit||read.humidity?.low_limit!==c.humidity.low_limit||read.humidity?.high_limit!==c.humidity.high_limit||!['mist','circulation_fan','ventilation_fan'].every(k=>read.temperature?.devices?.[k]===c.temperature.devices[k]&&read.humidity?.devices?.[k]===c.humidity.devices[k]))throw Error('讀回資料與上傳內容不一致');
    reply(true,null);
   }catch(err){reply(false,err.code||err.message||'資料庫錯誤')}
  });
