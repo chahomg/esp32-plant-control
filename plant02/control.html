@@ -13,6 +13,7 @@ let pendingId=null,loading=true,dirty=false;
 document.querySelectorAll('#manual input').forEach(x=>x.addEventListener('input',()=>{if(!loading)dirty=true}));
 function requestStored(){parent.postMessage({type:'plant02-control-load'},location.origin)}
 window.addEventListener('load',requestStored);
+window.addEventListener('message',e=>{if(e.origin===location.origin&&e.source===parent&&e.data?.type==='plant02-control-refresh'&&!dirty&&!pendingId){loading=true;requestStored()}});
 function fillStored(c){
  const keys=['mist','circulation_fan','ventilation_fan'];
  if(!c||!Number.isFinite(c.temperature?.high_limit)||!Number.isFinite(c.humidity?.low_limit)||!Number.isFinite(c.humidity?.high_limit)||!keys.every(k=>typeof c.temperature?.devices?.[k]==='boolean'&&typeof c.humidity?.devices?.[k]==='boolean'))throw Error('儲存設定欄位不完整');
