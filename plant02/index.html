@@ -194,7 +194,7 @@ nav{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px}nav butto
   <div class="daily-body"><div class="daily-tag">環境與養護 · 專業知識</div><h2>為什麼同一品種的鹿角蕨，孢子葉形態可能不同？</h2><p>從光照、濕度與培育環境出發，認識影響鹿角蕨生長形態的因素。這裡將每日呈現新文章、品種知識與栽培研究。</p><div class="daily-foot">公開閱讀專區 · 不需 Firebase 登入</div><details class="public-article" id="public-article"><summary>閱讀完整文章（公開瀏覽）</summary><div class="public-article-content"><h3>為什麼同一品種的鹿角蕨，孢子葉形態可能不同？</h3><p>即使是相同品種，鹿角蕨的孢子葉也可能因生長環境、植株年齡與個體差異而呈現不同的長度、角度和分岔方式。</p><h4>光照與葉片生長</h4><p>光照強度、每日累積光量（DLI）及光照時間，都可能影響植株的生長狀態。但不能單憑孢子葉長短，就認定某一株接受的光量較高或較低。</p><h4>濕度與水分供應</h4><p>空氣濕度、蒸氣壓差（VPD）、基質含水狀態和通風條件，會共同影響葉片的水分平衡。觀察形態時，最好同步記錄這些條件。</p><h4>如何比較不同環境？</h4><p>可以記錄每片新葉的長度、分岔數、展開角度與生長日期，並對照同期的 PPFD、DLI、溫度、濕度及 VPD。多次觀察才能判斷是否存在穩定的環境與形態關係。</p><p class="article-disclaimer">這是公開示範文章，供測試無登入閱讀功能；內容為一般研究方向說明，不代表已證實的鹿角蕨形態控制結論。</p></div></details></div>
 </div><div class="card chart-card"><div class="chart-head"><span class="chart-title">今日溫濕度曲線</span><span class="chart-note" id="chart-date"></span></div><div class="legend"><span><i class="swatch" style="background:var(--temp)"></i>溫度 °C（左軸）</span><span><i class="swatch" style="background:var(--rh)"></i>濕度 %（右軸）</span></div><div class="chart-wrap"><svg id="chart" viewBox="0 0 350 210" role="img" aria-label="今日溫度與濕度雙軸曲線"></svg></div><p id="chart-message" class="chart-message">等待即時資料；歷史資料尚未連接。</p></div></section>
 <section id="history"><div class="card"><div class="chart-title">MicroSD／Firebase 每日紀錄</div><p class="status">此雲端頁面讀取 Firebase 歷史資料鏡像，不會直接連接區域網路 MicroSD。ESP32 必須另外把每日紀錄同步到 Firebase。</p><label for="history-date">選擇日期</label> <input id="history-date" type="date"><button id="history-refresh" class="action" type="button">讀取日期紀錄</button><p id="history-status" class="status">等待連線。</p><div class="chart-title" style="margin:12px 0 4px">歷史溫濕度曲線</div><div class="legend"><span><i class="swatch" style="background:var(--temp)"></i>溫度 °C（左軸）</span><span><i class="swatch" style="background:var(--rh)"></i>濕度 %（右軸）</span></div><div class="chart-wrap"><svg id="history-climate-chart" viewBox="0 0 350 210" role="img" aria-label="所選日期歷史溫濕度雙軸曲線"></svg></div><p id="history-climate-status" class="chart-message">尚未讀取歷史溫濕度。</p><div class="chart-title" style="margin:12px 0 4px">PAR 原始值曲線（待校準）</div><div class="chart-wrap"><svg id="par-chart" viewBox="0 0 350 210" aria-label="每日 PAR 原始值曲線"></svg></div><p class="status">PAR 為原始值，尚未校正為 PPFD；無資料時不補值。</p></div></section>
-<section id="control"><iframe title="PLANT-02 環境自動控制" src="./control.html?v=197-readback-20261118" style="display:block;width:100%;height:530px;border:0;border-radius:12px;background:#f3f7f4" loading="lazy"></iframe></section>
+<section id="control"><iframe title="PLANT-02 環境自動控制" src="./control.html?v=198-fan-timers" style="display:block;width:100%;height:530px;border:0;border-radius:12px;background:#f3f7f4" loading="lazy"></iframe></section>
 <section id="models"><div class="card placeholder">環境模型待開發：模型儲存與閉環重播。</div></section>
 <nav><button class="active" data-section="monitor">監控</button><button data-section="history">紀錄</button><button data-section="control">控制</button><button data-section="models">模型</button><button type="button" id="network-log-open" aria-label="開啟連線日誌">日誌</button></nav>
 
@@ -297,7 +297,7 @@ window.addEventListener('message',async event=>{
 });
 window.addEventListener('message',event=>{
  if(event.origin===location.origin&&event.source===document.querySelector('#control iframe')?.contentWindow&&event.data?.type==='plant02-control-probe')
- event.source.postMessage({type:'plant02-control-protocol',version:198,probe_id:event.data.probe_id},event.origin);
+ event.source.postMessage({type:'plant02-control-protocol',version:199,probe_id:event.data.probe_id},event.origin);
 });
 // PLANT-02 settings: authenticated write and readback.
  window.addEventListener('message',async event=>{
@@ -306,10 +306,13 @@ window.addEventListener('message',event=>{
   const reply=(ok,error)=>event.source.postMessage({type:'plant02-control-result',request_id:requestId,ok,error},event.origin);
   const c=event.data.config;
   const validDevices=d=>d&&['mist','circulation_fan','ventilation_fan'].every(k=>typeof d[k]==='boolean');
+  const fanKeys=["circulation_interval_minutes","circulation_run_minutes","ventilation_interval_minutes","ventilation_run_minutes"];
+  const validFan=(interval,run)=>Number.isInteger(interval)&&interval>=2&&interval<=1440&&Number.isInteger(run)&&run>=1&&run<interval;
+  const validTimers=t=>t&&validFan(t[fanKeys[0]],t[fanKeys[1]])&&validFan(t[fanKeys[2]],t[fanKeys[3]]);
   const validSchedule=s=>s&&[1,2,3].includes(s.interval_hours)&&[s.circulation_minutes,s.ventilation_minutes].every(n=>Number.isInteger(n)&&n>=1&&n<=60);
   const error=!c?'設定資料缺漏':
    !['manual','suggested'].includes(c.mode)?'設定模式不相容，請重新開啟新版網頁':
-   (c.mode==='suggested'&&!validSchedule(c.schedule))||(c.schedule!==undefined&&!validSchedule(c.schedule))?'排程參數錯誤：頻率須為 1～3 小時，運轉須為 1～60 整數分鐘':
+   (c.mode==='suggested'&&!validTimers(c.fan_timers))||(c.schedule!==undefined&&!validSchedule(c.schedule))?'請檢查兩台風扇的間隔與運轉時間':
    !Number.isFinite(c.temperature?.high_limit)||c.temperature.high_limit<10||c.temperature.high_limit>60?'手動設定的高溫上限須為 10～60°C':
    !validDevices(c.temperature?.devices)?'溫度控制設備欄位不完整':
    !Number.isFinite(c.humidity?.low_limit)||!Number.isFinite(c.humidity?.high_limit)||c.humidity.low_limit<0||c.humidity.high_limit>100||c.humidity.low_limit>=c.humidity.high_limit?'手動設定的濕度範圍須為 0～100%，且下限小於上限':
@@ -322,12 +325,13 @@ window.addEventListener('message',event=>{
    const data={...c,request_id:requestId,updated_at:serverTimestamp(),status:'draft_only'};
    if(c.mode==='manual'){
     delete data.schedule;
+    delete data.fan_timers;
     await update(p,data);
    }else{
     await set(p,data);
    }
    const snapshot=await get(p);const read=snapshot.val();
-   if(!read||read.mode!==c.mode||(c.schedule&&!['interval_hours','circulation_minutes','ventilation_minutes'].every(k=>read.schedule?.[k]===c.schedule[k]))||read.request_id!==requestId||read.temperature?.high_limit!==c.temperature.high_limit||read.humidity?.low_limit!==c.humidity.low_limit||read.humidity?.high_limit!==c.humidity.high_limit||!['mist','circulation_fan','ventilation_fan'].every(k=>read.temperature?.devices?.[k]===c.temperature.devices[k]&&read.humidity?.devices?.[k]===c.humidity.devices[k]))throw Error('讀回資料與上傳內容不一致');
+   if(!read||read.mode!==c.mode||(c.fan_timers&&!fanKeys.every(k=>read.fan_timers?.[k]===c.fan_timers[k]))||(c.schedule&&!['interval_hours','circulation_minutes','ventilation_minutes'].every(k=>read.schedule?.[k]===c.schedule[k]))||read.request_id!==requestId||read.temperature?.high_limit!==c.temperature.high_limit||read.humidity?.low_limit!==c.humidity.low_limit||read.humidity?.high_limit!==c.humidity.high_limit||!['mist','circulation_fan','ventilation_fan'].every(k=>read.temperature?.devices?.[k]===c.temperature.devices[k]&&read.humidity?.devices?.[k]===c.humidity.devices[k]))throw Error('讀回資料與上傳內容不一致');
    reply(true,null);
   }catch(err){reply(false,err.code||err.message||'資料庫錯誤')}
  });
