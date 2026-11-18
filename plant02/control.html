@@ -12,7 +12,16 @@ $('manualBtn').onclick=()=>switchTab('manual');$('suggestBtn').onclick=()=>switc
 function devices(section){return Object.fromEntries(['mist','circulation_fan','ventilation_fan'].map((key,i)=>[key,section.querySelectorAll('input[type=checkbox]')[i].checked]));}
 let pendingId=null,loading=true,dirty=false;
 document.querySelectorAll('input,select').forEach(x=>x.addEventListener('input',()=>{if(!loading)dirty=true}));
-function requestStored(){parent.postMessage({type:'plant02-control-load'},location.origin)}
+let loadTimer;
+function requestStored(){
+ clearTimeout(loadTimer);
+ loading=true;
+ loadTimer=setTimeout(()=>{
+  loading=false;
+  $('error').textContent='讀取 Firebase 設定逾時。請重新整理或確認 Google 登入。';
+ },15000);
+ parent.postMessage({type:'plant02-control-load'},location.origin);
+}
 window.addEventListener('load',requestStored);
 window.addEventListener('message',e=>{if(e.origin===location.origin&&e.source===parent&&e.data?.type==='plant02-control-refresh'&&!dirty&&!pendingId){loading=true;requestStored()}});
 function fillStored(c){
@@ -40,18 +49,21 @@ async function checkParentVersion(){
   parent.postMessage({type:'plant02-control-probe',probe_id:probeId},location.origin);
  });
 }
-let checkingParent=false;
+let checkingParent=false,pendingMode='manual';
 $('upload').onclick=async()=>{
  if(pendingId||checkingParent)return;
  if(loading){$('error').textContent='設定尚未載入，請稍候';return}
- checkingParent=true;
- const compatible=await checkParentVersion();checkingParent=false;
- if(!compatible){$('error').textContent='主頁版本過舊，請從新版連結重新開啟網頁後再上傳';return}
+ if(selectedMode==='suggest'){
+  checkingParent=true;
+  const compatible=await checkParentVersion();checkingParent=false;
+  if(!compatible){$('error').textContent='主頁版本過舊，請從新版連結重新開啟網頁後再上傳';return}
+ }
  reset();
  const [th,hl,hh]=['th','hl','hh'].map(id=>$(id).value);
  if([th,hl,hh].some(v=>v.trim()===''||!Number.isFinite(Number(v)))||Number(th)<10||Number(th)>60||Number(hl)>=Number(hh)||Number(hl)<0||Number(hh)>100){$('error').textContent='請檢查高溫上限與濕度範圍';return;}
  const schedule={interval_hours:Number($('interval').value),circulation_minutes:Number($('circulationMinutes').value),ventilation_minutes:Number($('ventilationMinutes').value)};
  if(selectedMode==='suggest'&&(![1,2,3].includes(schedule.interval_hours)||![schedule.circulation_minutes,schedule.ventilation_minutes].every(n=>Number.isInteger(n)&&n>=1&&n<=60))){$('error').textContent='運轉時間請輸入 1～60 的整數分鐘';return}
+ pendingMode=selectedMode;
  pendingId='web-' +Date.now()+'-'+Math.random().toString(36).slice(2,9);
  $('upload').disabled=true;document.querySelectorAll('input,select,.tabs button').forEach(x=>x.disabled=true);$('orange').classList.add('on');$('error').textContent='正在寫入 Firebase…';
  parent.postMessage({type:'plant02-control-save',request_id:pendingId,config:{mode:selectedMode==='suggest'?'suggested':'manual',...(selectedMode==='suggest'?{schedule}:{}),temperature:{high_limit:Number(th),devices:devices(fields[0])},humidity:{low_limit:Number(hl),high_limit:Number(hh),devices:devices(fields[1])}}},location.origin);
@@ -59,8 +71,9 @@ $('upload').onclick=async()=>{
 window.addEventListener('message',e=>{
  if(e.origin!==location.origin||e.source!==parent||!e.data)return;
  if(e.data.type==='plant02-control-load-result'){
-   if(dirty||pendingId)return;
+   clearTimeout(loadTimer);
    loading=false;
+   if(dirty||pendingId)return;
    if(e.data.ok){try{fillStored(e.data.config)}catch(err){$('error').textContent='讀取設定失敗：'+err.message}}
    else{$('error').textContent='無法讀取已儲存設定：'+String(e.data.error||'未知錯誤')+'；欄位為預設值，請確認後再上傳'}
    return;
@@ -68,7 +81,7 @@ window.addEventListener('message',e=>{
  if(e.data.type==='plant02-control-progress'&&e.data.request_id===pendingId){$('error').textContent=e.data.message;return}
  if(e.data.type!=='plant02-control-result'||e.data.request_id!==pendingId)return;
  pendingId=null;$('upload').disabled=false;document.querySelectorAll('input,select,.tabs button').forEach(x=>x.disabled=false);$('orange').classList.remove('on');
- if(e.data.ok){$('green').classList.add('on');dirty=false;$('error').style.color='#167448';$('error').textContent='ESP32 已回覆確認設定'}
+ if(e.data.ok){$('green').classList.add('on');dirty=false;$('error').style.color='#167448';$('error').textContent=pendingMode==='manual'?'Firebase 已儲存手動設定，ESP32 將於下次同步時讀取':'ESP32 已回覆確認設定'}
  else{$('green').classList.remove('on');$('error').style.color='#b03b2d';$('error').textContent='設定未完成：'+String(e.data.error||'未知錯誤')}
 });
 </script></body></html>
