@@ -26,9 +26,27 @@ function fillStored(c){
  }
  dirty=false;reset();$('error').textContent='已載入 Firebase 最後儲存設定';
 }
-$('upload').onclick=()=>{
- if(pendingId)return;
+async function checkParentVersion(){
+ const probeId='probe-'+Date.now()+'-'+Math.random();
+ return new Promise(resolve=>{
+  let timer;
+  const listener=e=>{
+   if(e.origin===location.origin&&e.source===parent&&e.data?.type==='plant02-control-protocol'&&e.data.probe_id===probeId){
+    clearTimeout(timer);window.removeEventListener('message',listener);resolve(e.data.version===197);
+   }
+  };
+  window.addEventListener('message',listener);
+  timer=setTimeout(()=>{window.removeEventListener('message',listener);resolve(false)},2000);
+  parent.postMessage({type:'plant02-control-probe',probe_id:probeId},location.origin);
+ });
+}
+let checkingParent=false;
+$('upload').onclick=async()=>{
+ if(pendingId||checkingParent)return;
  if(loading){$('error').textContent='設定尚未載入，請稍候';return}
+ checkingParent=true;
+ const compatible=await checkParentVersion();checkingParent=false;
+ if(!compatible){$('error').textContent='主頁版本過舊，請從新版連結重新開啟網頁後再上傳';return}
  reset();
  const [th,hl,hh]=['th','hl','hh'].map(id=>$(id).value);
  if([th,hl,hh].some(v=>v.trim()===''||!Number.isFinite(Number(v)))||Number(th)<10||Number(th)>60||Number(hl)>=Number(hh)||Number(hl)<0||Number(hh)>100){$('error').textContent='請檢查高溫上限與濕度範圍';return;}
