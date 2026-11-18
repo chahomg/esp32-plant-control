@@ -41,7 +41,7 @@ async function checkParentVersion(){
   let timer;
   const listener=e=>{
    if(e.origin===location.origin&&e.source===parent&&e.data?.type==='plant02-control-protocol'&&e.data.probe_id===probeId){
-    clearTimeout(timer);window.removeEventListener('message',listener);resolve(e.data.version===197);
+    clearTimeout(timer);window.removeEventListener('message',listener);resolve(e.data.version===198);
    }
   };
   window.addEventListener('message',listener);
@@ -81,7 +81,7 @@ window.addEventListener('message',e=>{
  if(e.data.type==='plant02-control-progress'&&e.data.request_id===pendingId){$('error').textContent=e.data.message;return}
  if(e.data.type!=='plant02-control-result'||e.data.request_id!==pendingId)return;
  pendingId=null;$('upload').disabled=false;document.querySelectorAll('input,select,.tabs button').forEach(x=>x.disabled=false);$('orange').classList.remove('on');
- if(e.data.ok){$('green').classList.add('on');dirty=false;$('error').style.color='#167448';$('error').textContent=pendingMode==='manual'?'Firebase 已儲存手動設定，ESP32 將於下次同步時讀取':'ESP32 已回覆確認設定'}
+ if(e.data.ok){$('green').classList.add('on');dirty=false;$('error').style.color='#167448';$('error').textContent=pendingMode==='manual'?'Firebase 已儲存手動設定，ESP32 將於下次同步時讀取':'Firebase 已儲存建議設定，ESP32 將於下次同步時讀取'}
  else{$('green').classList.remove('on');$('error').style.color='#b03b2d';$('error').textContent='設定未完成：'+String(e.data.error||'未知錯誤')}
 });
 </script></body></html>
