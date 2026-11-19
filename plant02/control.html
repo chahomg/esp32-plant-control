@@ -1,6 +1,6 @@
 <!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>PLANT-02 控制</title><style>
 *{box-sizing:border-box}body{margin:0;background:#f3f7f4;color:#173a30;font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC",sans-serif}.panel{background:white;border:1px solid #d8e5dc;border-radius:12px;padding:14px}h2{font-size:17px;margin:0 0 12px}.tabs{display:flex;max-width:310px;border:1px solid #b6d2c0;border-radius:8px;padding:3px;gap:3px;background:#f6faf7;margin-bottom:15px}.tabs button{flex:1;padding:7px 8px;font-size:13px;border:0;border-radius:6px;background:transparent;color:#486357}.tabs button.selected{background:#286f4e;color:white;font-weight:700}.section{border-top:1px solid #e2ebe5;padding:13px 0}.section:first-child{border-top:0;padding-top:0}.section-title{font-size:15px;font-weight:700;margin-bottom:9px}.controls{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}.range{display:flex;gap:5px;align-items:end}.field{flex:1;min-width:0}.field label{display:block;font-size:11px;color:#667a6d;margin-bottom:5px}.field select{width:100%;background:white;border:1px solid #cbdcd0;border-radius:7px;padding:10px;font-size:16px;color:#173a30}.schedule-fields{display:grid;gap:14px}.field input{width:100%;min-width:0;border:1px solid #cbdcd0;border-radius:7px;padding:10px 4px;text-align:center;font-size:16px;color:#173a30}.tilde{padding-bottom:11px;color:#7b9282}.device-title{font-size:11px;color:#667a6d;margin-bottom:6px}.device{display:flex;align-items:center;gap:7px;font-size:12px;margin:8px 0;white-space:nowrap}.device input{accent-color:#28764f;width:17px;height:17px;margin:0}.submit{width:100%;padding:13px;border:0;border-radius:9px;background:#28764f;color:white;font-size:16px;font-weight:700;margin-top:8px}.indicators{display:flex;justify-content:space-evenly;align-items:center;gap:8px;padding:15px 0 2px}.indicator{display:flex;align-items:center;gap:7px;font-size:13px;white-space:nowrap}.light{width:12px;height:12px;border-radius:50%;background:#cbd1ce;display:inline-block}.light.orange.on{background:#f59e0b;box-shadow:0 0 8px #f59e0b80}.light.green.on{background:#22b35e;box-shadow:0 0 8px #22b35e80}.error{font-size:12px;color:#b03b2d;text-align:center;min-height:16px}.hidden{display:none}@media(max-width:370px){.device{font-size:11px}.controls{gap:8px}.panel{padding:11px}.indicator{font-size:11px}}
-</style></head><body><section class="panel"><h2>環境自動控制</h2><div class="tabs"><button id="manualBtn" class="selected" type="button">手動設定</button><button id="suggestBtn" type="button">建議設定</button></div><div id="manual"><div class="section"><div class="section-title">溫度控制</div><div class="controls"><div class="range"><div class="field"><label for="th">高溫上限 °C</label><input id="th" type="number" value="28" step="0.1"></div></div><div><div class="device-title">控制設備</div><label class="device"><input type="checkbox">霧化器</label><label class="device"><input type="checkbox" checked>循環風扇</label><label class="device"><input type="checkbox" checked>通風風扇</label></div></div></div><div class="section"><div class="section-title">濕度控制</div><div class="controls"><div class="range"><div class="field"><label>下限 %</label><input id="hl" type="number" value="65" step="1"></div><span class="tilde">～</span><div class="field"><label>上限 %</label><input id="hh" type="number" value="85" step="1"></div></div><div><div class="device-title">控制設備</div><label class="device"><input type="checkbox" checked>霧化器</label><label class="device"><input type="checkbox">循環風扇</label><label class="device"><input type="checkbox">通風風扇</label></div></div></div></div><div id="suggest" class="hidden"><div class="schedule-fields"><div class="field"><label for="circulation_interval_minutes">共用啟動間隔（分鐘）</label><input type="number" inputmode="numeric" id="circulation_interval_minutes" value="30" min="2" max="1440" step="1"></div><div class="field"><label for="circulation_run_minutes">循環扇每次運轉（分鐘）</label><input type="number" inputmode="numeric" id="circulation_run_minutes" value="25" min="1" max="1439" step="1"></div><div class="field"><label for="ventilation_run_minutes">通風扇每次運轉（分鐘）</label><input type="number" inputmode="numeric" id="ventilation_run_minutes" value="3" min="1" max="1439" step="1"></div></div></div><button class="submit" id="upload" type="button">上傳設定</button><div class="indicators"><div class="indicator"><span id="orange" class="light orange"></span>上傳中</div><div class="indicator"><span id="green" class="light green"></span>上傳設定完成</div></div><div id="error" class="error" aria-live="polite">正在讀取 Firebase 已儲存設定…</div></section><script>
+</style></head><body><section class="panel"><h2>環境自動控制</h2><div class="tabs"><button id="manualBtn" class="selected" type="button">手動設定</button><button id="suggestBtn" type="button">建議設定</button><button id="forceBtn" type="button">強制通風</button></div><div id="manual"><div class="section"><div class="section-title">溫度控制</div><div class="controls"><div class="range"><div class="field"><label for="th">高溫上限 °C</label><input id="th" type="number" value="28" step="0.1"></div></div><div><div class="device-title">控制設備</div><label class="device"><input type="checkbox">霧化器</label><label class="device"><input type="checkbox" checked>循環風扇</label><label class="device"><input type="checkbox" checked>通風風扇</label></div></div></div><div class="section"><div class="section-title">濕度控制</div><div class="controls"><div class="range"><div class="field"><label>下限 %</label><input id="hl" type="number" value="65" step="1"></div><span class="tilde">～</span><div class="field"><label>上限 %</label><input id="hh" type="number" value="85" step="1"></div></div><div><div class="device-title">控制設備</div><label class="device"><input type="checkbox" checked>霧化器</label><label class="device"><input type="checkbox">循環風扇</label><label class="device"><input type="checkbox">通風風扇</label></div></div></div></div><div id="suggest" class="hidden"><div class="schedule-fields"><div class="field"><label for="circulation_interval_minutes">共用啟動間隔（分鐘）</label><input type="number" inputmode="numeric" id="circulation_interval_minutes" value="30" min="2" max="1440" step="1"></div><div class="field"><label for="circulation_run_minutes">循環扇每次運轉（分鐘）</label><input type="number" inputmode="numeric" id="circulation_run_minutes" value="25" min="1" max="1439" step="1"></div><div class="field"><label for="ventilation_run_minutes">通風扇每次運轉（分鐘）</label><input type="number" inputmode="numeric" id="ventilation_run_minutes" value="3" min="1" max="1439" step="1"></div></div></div><div id="force" class="hidden"><div class="schedule-fields"><div class="field"><label for="forceInterval">共用啟動間隔（分鐘）</label><input type="number" inputmode="numeric" id="forceInterval" value="30" min="2" max="1440" step="1"></div><div class="field"><label for="forceVentRun">通風扇每次運轉（分鐘）</label><input type="number" inputmode="numeric" id="forceVentRun" value="15" min="1" max="1439" step="1"></div><div class="field"><label for="forceCircRun">循環扇每次運轉（分鐘）</label><input type="number" inputmode="numeric" id="forceCircRun" value="25" min="1" max="1439" step="1"></div><div class="field"><label for="forceHours">持續時間（小時）</label><input type="number" inputmode="numeric" id="forceHours" value="8" min="1" max="24" step="1"></div></div><p>到期後自動恢復原控制。上傳手動或建議設定可提前結束。</p></div><button class="submit" id="upload" type="button">上傳設定</button><div class="indicators"><div class="indicator"><span id="orange" class="light orange"></span>上傳中</div><div class="indicator"><span id="green" class="light green"></span>上傳設定完成</div></div><div id="error" class="error" aria-live="polite">正在讀取 Firebase 已儲存設定…</div></section><script>
 const $=id=>document.getElementById(id);
 const path='plantGatewayV1/controlDrafts/PLANT-02';
 const fanKeys=["circulation_interval_minutes","circulation_run_minutes","ventilation_run_minutes"];
@@ -9,8 +9,15 @@ const fields=[...document.querySelectorAll('#manual .section')];
 function reset(){ $('orange').classList.remove('on');$('green').classList.remove('on');$('error').style.color='';$('error').textContent='';}
 document.querySelectorAll('input,select').forEach(x=>x.addEventListener('input',reset));
 let selectedMode='manual';
-function switchTab(mode){selectedMode=mode;let manual=mode==='manual';$('manualBtn').classList.toggle('selected',manual);$('suggestBtn').classList.toggle('selected',!manual);$('manual').classList.toggle('hidden',!manual);$('suggest').classList.toggle('hidden',manual)}
-$('manualBtn').onclick=()=>switchTab('manual');$('suggestBtn').onclick=()=>switchTab('suggest');
+function switchTab(mode){
+ selectedMode=mode;
+ for(const key of ['manual','suggest','force']){
+  $(key+'Btn').classList.toggle('selected',key===mode);
+  $(key).classList.toggle('hidden',key!==mode);
+ }
+ $('upload').textContent=mode==='force'?'啟動強制通風':'上傳設定';
+}
+$('manualBtn').onclick=()=>switchTab('manual');$('suggestBtn').onclick=()=>switchTab('suggest');$('forceBtn').onclick=()=>switchTab('force');
 function devices(section){return Object.fromEntries(['mist','circulation_fan','ventilation_fan'].map((key,i)=>[key,section.querySelectorAll('input[type=checkbox]')[i].checked]));}
 let pendingId=null,loading=true,dirty=false;
 document.querySelectorAll('input,select').forEach(x=>x.addEventListener('input',()=>{if(!loading)dirty=true}));
@@ -40,6 +47,8 @@ function fillStored(c){
    if(validFan(interval,run))$(fanKeys[i]).value=run;
   }
  }
+ const force=/^web-[0-9]{13}-forceventi([0-9]{1,4})v([0-9]{1,4})c([0-9]{1,4})h([0-9]{1,2})x[a-z0-9]+$/.exec(c.request_id||'');
+ if(force)['forceInterval','forceVentRun','forceCircRun','forceHours'].forEach((id,i)=>$(id).value=force[i+1]);
  dirty=false;reset();$('error').textContent='已載入 Firebase 最後儲存設定';
 }
 async function checkParentVersion(){
@@ -48,7 +57,7 @@ async function checkParentVersion(){
   let timer;
   const listener=e=>{
    if(e.origin===location.origin&&e.source===parent&&e.data?.type==='plant02-control-protocol'&&e.data.probe_id===probeId){
-    clearTimeout(timer);window.removeEventListener('message',listener);resolve(e.data.version===199);
+    clearTimeout(timer);window.removeEventListener('message',listener);resolve(e.data.version===200||(selectedMode==='suggest'&&e.data.version===199));
    }
   };
   window.addEventListener('message',listener);
@@ -60,12 +69,24 @@ let checkingParent=false,pendingMode='manual';
 $('upload').onclick=async()=>{
  if(pendingId||checkingParent)return;
  if(loading){$('error').textContent='設定尚未載入，請稍候';return}
- if(selectedMode==='suggest'){
+ if(selectedMode!=='manual'){
   checkingParent=true;
   const compatible=await checkParentVersion();checkingParent=false;
   if(!compatible){$('error').textContent='主頁版本過舊，請從新版連結重新開啟網頁後再上傳';return}
  }
  reset();
+ if(selectedMode==='force'){
+  const [interval,ventRun,circRun,hours]=['forceInterval','forceVentRun','forceCircRun','forceHours'].map(id=>Number($(id).value));
+  if(!validFan(interval,ventRun)||!validFan(interval,circRun)||!Number.isInteger(hours)||hours<1||hours>24){
+   $('error').textContent='運轉分鐘須短於共用間隔，持續時間須為 1～24 整數小時';return;
+  }
+  pendingMode='force';
+  pendingId='web-'+Date.now()+'-forceventi'+interval+'v'+ventRun+'c'+circRun+'h'+hours+'x'+Math.random().toString(36).slice(2,9);
+  $('upload').disabled=true;document.querySelectorAll('input,select,.tabs button').forEach(x=>x.disabled=true);$('orange').classList.add('on');
+  $('error').textContent='正在送出強制通風…';
+  parent.postMessage({type:'plant02-control-save',request_id:pendingId,force_vent:true},location.origin);
+  return;
+ }
  const [th,hl,hh]=['th','hl','hh'].map(id=>$(id).value);
  if([th,hl,hh].some(v=>v.trim()===''||!Number.isFinite(Number(v)))||Number(th)<10||Number(th)>60||Number(hl)>=Number(hh)||Number(hl)<0||Number(hh)>100){$('error').textContent='請檢查高溫上限與濕度範圍';return;}
  const minutes=fanKeys.map(k=>Number($(k).value));
@@ -91,7 +112,7 @@ window.addEventListener('message',e=>{
  if(e.data.type==='plant02-control-progress'&&e.data.request_id===pendingId){$('error').textContent=e.data.message;return}
  if(e.data.type!=='plant02-control-result'||e.data.request_id!==pendingId)return;
  pendingId=null;$('upload').disabled=false;document.querySelectorAll('input,select,.tabs button').forEach(x=>x.disabled=false);$('orange').classList.remove('on');
- if(e.data.ok){$('green').classList.add('on');dirty=false;$('error').style.color='#167448';$('error').textContent=pendingMode==='manual'?'Firebase 已儲存手動設定，ESP32 將於下次同步時讀取':'Firebase 已儲存建議設定，ESP32 將於下次同步時讀取'}
+ if(e.data.ok){if(pendingMode!=='force')$('green').classList.add('on');dirty=false;$('error').style.color='#167448';$('error').textContent=pendingMode==='force'?'已送出強制通風，等待 ESP32 套用':pendingMode==='manual'?'Firebase 已儲存手動設定，ESP32 將於下次同步時讀取':'Firebase 已儲存建議設定，ESP32 將於下次同步時讀取'}
  else{$('green').classList.remove('on');$('error').style.color='#b03b2d';$('error').textContent='設定未完成：'+String(e.data.error||'未知錯誤')}
 });
 </script></body></html>
