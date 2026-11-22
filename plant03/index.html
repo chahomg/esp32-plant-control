@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<title>PLANT03｜鹿角蕨環境研究中心</title>
+<style>
+:root{color-scheme:dark;background:#101f1a;color:#e9f5ed;font:16px system-ui,-apple-system,sans-serif}
+*{box-sizing:border-box}body{margin:0}main{max-width:680px;margin:auto;padding:32px 18px}
+header{padding:12px 0 24px}h1{margin:0;font-size:clamp(2.2rem,9vw,3.5rem);letter-spacing:.04em}
+header p{margin:5px 0;color:#b6ccbe}section{background:#20372e;border:1px solid #436454;border-radius:16px;padding:16px;margin-bottom:16px}
+h2{font-size:1.08rem;margin:0 0 14px}.readings{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.reading{background:#152a22;border-radius:12px;padding:12px;min-width:0}.value{display:block;font-size:clamp(1.05rem,5vw,2rem);margin-top:5px;white-space:nowrap;font-variant-numeric:tabular-nums}.temp{color:#ffad69}.humidity{color:#8cd4ff}
+button,a{color:#c0efcd}button{background:#315d49;border:1px solid #63977c;border-radius:8px;padding:9px 12px;font:inherit}p{line-height:1.5}.muted{color:#b6ccbe}
+</style>
+</head>
+<body><main>
+<header><h1>PLANT03</h1><p>鹿角蕨環境研究中心</p></header>
+<section aria-labelledby="monitor"><h2 id="monitor">SHT30 #1 即時監控</h2>
+<div class="readings"><div class="reading">溫度<strong id="temperature" class="value temp">—</strong></div>
+<div class="reading">相對濕度<strong id="humidity" class="value humidity">—</strong></div></div>
+<p id="updated" class="muted">尚無更新時間</p>
+<p id="status" role="status">正在確認登入狀態…</p>
+<button id="login" type="button" hidden>使用 Google 登入</button>
+<button id="logout" type="button" hidden>登出</button></section>
+<section aria-labelledby="local"><h2 id="local">區網感測器頁</h2>
+<p>連到 PLANT03 所在的 Wi-Fi，即可查看兩顆 SHT30。</p>
+<a href="http://192.168.8.111/sht30">查看雙 SHT30</a></section>
+</main>
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js';
+import { getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signInWithRedirect, getRedirectResult, signOut } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js';
+import { getDatabase, get, ref, onValue } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js';
+const firebaseConfig={apiKey:'AIzaSyCKzLgyUZkWAfnJkqDMtxuOsTJeMC_RdHA',authDomain:'esp32-plant-control.firebaseapp.com',databaseURL:'https://esp32-plant-control-default-rtdb.asia-southeast1.firebasedatabase.app',projectId:'esp32-plant-control',storageBucket:'esp32-plant-control.firebasestorage.app',messagingSenderId:'758179316822',appId:'1:758179316822:web:fbec086993309ef15ca7f7'}
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getDatabase(app);
+const provider = new GoogleAuthProvider();
+const byId = id => document.getElementById(id);
+const plant03HardwareHash = '094a6c7759eba9c7a17b063200bc277378f1cd389e005aadc40498f2f44a5c92';
+let unsubscribe;
+let generation = 0;
+
+function message(text) { byId('status').textContent = text; }
+function renderReading(data) {
+  byId('temperature').textContent = Number.isFinite(data?.temperature) ? data.temperature.toFixed(2) + ' °C' : '—';
+  byId('humidity').textContent = Number.isFinite(data?.humidity) ? data.humidity.toFixed(2) + ' %' : '—';
+  const timestamp = data?.received_at;
+  byId('updated').textContent = Number.isFinite(timestamp) && timestamp > 0
+    ? '更新時間 ' + new Date(timestamp).toLocaleString('zh-TW', {timeZone:'Asia/Taipei',hour12:false})
+    : '尚無更新時間';
+}
+
+onAuthStateChanged(auth, async user => {
+  const current = ++generation;
+  unsubscribe?.();
+  unsubscribe = undefined;
+  renderReading(null);
+  byId('login').hidden = Boolean(user);
+  byId('logout').hidden = !user;
+  if (!user) { message('請登入已獲授權的 Google 帳號以讀取 PLANT03。'); return; }
+  message('正在讀取 PLANT03…');
+  try {
+    const entry = (await get(ref(db, 'plantGatewayV1/registry/byHardware/' + plant03HardwareHash))).val();
+    if (current !== generation) return;
+    const uid = typeof entry === 'string' ? entry : entry?.uid;
+    if (typeof uid !== 'string' || !/^[a-f0-9]{48}$/i.test(uid)) {
+      message('找不到 PLANT03 的設備登記。');
+      return;
+    }
+    const device = (await get(ref(db, 'plantGatewayV1/registry/devices/' + uid))).val();
+    if (current !== generation) return;
+    if (device?.status !== 'ACTIVE' || device?.hardware_hash !== plant03HardwareHash) {
+      message('PLANT03 的裝置登記未通過核對。');
+      return;
+    }
+    unsubscribe = onValue(ref(db, 'plantGatewayV1/deviceData/' + uid + '/latest'), snapshot => {
+      if (current !== generation) return;
+      renderReading(snapshot.val());
+      message(snapshot.exists() ? '已讀取 PLANT03 即時資料' : '目前沒有 PLANT03 即時資料');
+    }, () => {
+      if (current === generation) { renderReading(null); message('無法讀取即時資料，請核對帳號權限。'); }
+    });
+  } catch (error) {
+    if (current === generation) message('無法讀取 PLANT03 登記，請核對帳號權限與網路。');
+  }
+});
+byId('login').onclick = async () => {
+  try { await signInWithPopup(auth, provider); }
+  catch (error) {
+    if (['auth/popup-blocked','auth/operation-not-supported-in-this-environment'].includes(error.code)) {
+      try { await signInWithRedirect(auth, provider); return; } catch {}
+    }
+    if (error.code !== 'auth/popup-closed-by-user') message('登入未完成，請重試。');
+  }
+};
+byId('logout').onclick = () => signOut(auth).catch(() => message('登出失敗，請重試。'));
+getRedirectResult(auth).catch(() => message('登入未完成，請重試。'));
+</script>
+</body></html>
