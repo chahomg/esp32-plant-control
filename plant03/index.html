@@ -183,11 +183,13 @@ nav{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px}nav butto
 .climate-pair>div:nth-child(3) strong{color:var(--rh)}
 .climate-pair small,.climate-pair .local-link{display:block;font-size:11px;margin-top:4px}
 .local-link{color:#b9eed4}
+
+#account-email:not([hidden]){display:block;overflow-wrap:anywhere}
 </style>
 </head>
 <body><main>
 <div id="home-page">
-<header><small>PLATYCERIUM RESEARCH SYSTEM</small><h1>鹿角蕨環境研究中心 PLAN03</h1></header><div class="dev-auth"><div id="notice" class="notice" role="status"><span id="notice-text">正在確認 Firebase 登入狀態…</span><button id="login-btn" type="button" hidden>使用 Google 登入</button><button id="logout-btn" type="button" hidden>登出</button></div></div>
+<header><small>PLATYCERIUM RESEARCH SYSTEM</small><h1>鹿角蕨環境研究中心 PLAN03</h1></header><div class="dev-auth"><div id="notice" class="notice" role="status"><span id="notice-text">正在確認 Firebase 登入狀態…</span><button id="login-btn" type="button" hidden>使用 Google 登入</button><button id="logout-btn" type="button" hidden>登出</button><small id="account-email" hidden></small></div></div>
 
 <section id="monitor" class="active"><div class="grid">
 <div class="card metric climate-pair"><div class="metric-label">箱內</div><div><span>溫度</span><strong id="temperature">— °C</strong></div><div><span>相對濕度</span><strong id="humidity">— %</strong></div><small id="updated">尚無更新時間</small></div><div class="card metric climate-pair"><div class="metric-label">箱外</div><div><span>溫度</span><strong id="outside-temperature">— °C</strong></div><div><span>相對濕度</span><strong id="outside-humidity">— %</strong></div><small id="outside-status" role="status">正在確認登入狀態…</small><a class="local-link" href="http://192.168.8.111/sht30">區網雙感測器</a></div><div class="card metric"><div class="metric-label">VPD</div><div id="vpd" class="value">-- kPa</div></div>
@@ -282,6 +284,7 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getDatabase(app);
 const provider = new GoogleAuthProvider();
+provider.setCustomParameters({prompt:"select_account"});
 const byId = id => document.getElementById(id);
 const plant03HardwareHash = '094a6c7759eba9c7a17b063200bc277378f1cd389e005aadc40498f2f44a5c92';
 let unsubscribe;
@@ -430,6 +433,9 @@ onAuthStateChanged(auth, async user => {
   renderReading(null, user ? '正在讀取箱外資料…' : '登入後顯示箱外讀值');
   byId('login-btn').hidden = Boolean(user);
   byId('logout-btn').hidden = !user;
+  const accountEmail = byId('account-email');
+  accountEmail.hidden = !user?.email;
+  accountEmail.textContent = user?.email ? '目前登入帳號 '+user.email : '';
   if (!user) { message('請登入已獲授權的 Google 帳號以讀取 PLANT03。'); return; }
   message('正在讀取 PLANT03…');
   try {
