@@ -199,7 +199,7 @@ nav{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px}nav butto
   <div class="daily-body"><div class="daily-tag">環境與養護 · 專業知識</div><h2>為什麼同一品種的鹿角蕨，孢子葉形態可能不同？</h2><p>從光照、濕度與培育環境出發，認識影響鹿角蕨生長形態的因素。這裡將每日呈現新文章、品種知識與栽培研究。</p><div class="daily-foot">公開閱讀專區 · 不需 Firebase 登入</div><details class="public-article" id="public-article"><summary>閱讀完整文章（公開瀏覽）</summary><div class="public-article-content"><h3>為什麼同一品種的鹿角蕨，孢子葉形態可能不同？</h3><p>即使是相同品種，鹿角蕨的孢子葉也可能因生長環境、植株年齡與個體差異而呈現不同的長度、角度和分岔方式。</p><h4>光照與葉片生長</h4><p>光照強度、每日累積光量（DLI）及光照時間，都可能影響植株的生長狀態。但不能單憑孢子葉長短，就認定某一株接受的光量較高或較低。</p><h4>濕度與水分供應</h4><p>空氣濕度、蒸氣壓差（VPD）、基質含水狀態和通風條件，會共同影響葉片的水分平衡。觀察形態時，最好同步記錄這些條件。</p><h4>如何比較不同環境？</h4><p>可以記錄每片新葉的長度、分岔數、展開角度與生長日期，並對照同期的 PPFD、DLI、溫度、濕度及 VPD。多次觀察才能判斷是否存在穩定的環境與形態關係。</p><p class="article-disclaimer">這是公開示範文章，供測試無登入閱讀功能；內容為一般研究方向說明，不代表已證實的鹿角蕨形態控制結論。</p></div></details></div>
 </div><div class="card chart-card"><div class="chart-head"><span class="chart-title">今日箱內溫濕度曲線</span><span class="chart-note" id="chart-date"></span></div><div class="legend"><span><i class="swatch" style="background:var(--temp)"></i>溫度 °C（左軸）</span><span><i class="swatch" style="background:var(--rh)"></i>濕度 %（右軸）</span></div><div class="chart-wrap"><svg id="chart" viewBox="0 0 350 210" role="img" aria-label="今日溫度與濕度雙軸曲線"></svg></div><p id="chart-message" class="chart-message">等待即時資料；歷史資料尚未連接。</p></div></section>
 <section id="history"><div class="card"><div class="chart-title">PLANT03 箱內每日紀錄</div><p class="status">此雲端頁面讀取 Firebase 歷史資料鏡像，不會直接連接區域網路 MicroSD。ESP32 必須另外把每日紀錄同步到 Firebase。</p><label for="history-date">選擇日期</label> <input id="history-date" type="date"><button id="history-refresh" class="action" type="button">讀取日期紀錄</button><p id="history-status" class="status">等待連線。</p><div class="chart-title" style="margin:12px 0 4px">歷史溫濕度曲線</div><div class="legend"><span><i class="swatch" style="background:var(--temp)"></i>溫度 °C（左軸）</span><span><i class="swatch" style="background:var(--rh)"></i>濕度 %（右軸）</span></div><div class="chart-wrap"><svg id="history-climate-chart" viewBox="0 0 350 210" role="img" aria-label="所選日期歷史溫濕度雙軸曲線"></svg></div><p id="history-climate-status" class="chart-message">尚未讀取歷史溫濕度。</p></div></section>
-<section id="control"><iframe title="PLANT03 環境自動控制" src="./control.html?v=plan03-control-1" style="display:block;width:100%;height:530px;border:0;border-radius:12px;background:#f3f7f4" loading="lazy"></iframe><p class="status"><a class="local-link" href="http://192.168.8.111/controls">同一 Wi-Fi 下測試三設備開關</a></p></section>
+<section id="control"><iframe title="PLANT03 環境自動控制" src="./control.html?v=plan03-control-cloud-2" style="display:block;width:100%;height:530px;border:0;border-radius:12px;background:#f3f7f4" loading="lazy"></iframe><p class="status"><a class="local-link" href="http://192.168.8.111/controls">同一 Wi-Fi 下測試三設備開關</a></p></section>
 <section id="models"><div class="card placeholder">環境模型待開發：模型儲存與閉環重播。</div></section>
 <nav><button class="active" data-section="monitor">監控</button><button data-section="history">紀錄</button><button data-section="control">控制</button><button data-section="models">模型</button><button type="button" id="network-log-open" aria-label="開啟連線日誌">日誌</button></nav>
 
@@ -357,7 +357,59 @@ function renderReading(data, emptyStatus = 'Firebase 尚無 PLANT03 即時資料
   if (valid && Number.isFinite(timestamp)) addPoint(t, rh, timestamp);
 }
 
+
+const controlBase='https://asia-southeast1-esp32-plant-control.cloudfunctions.net/plantDeviceGateway/plant03/control/';
+let controlSaving=false;
+
+async function controlRequest(action,body={}){
+  if(!auth.currentUser)throw Error('請先在主頁使用 Google 登入');
+  const token=await auth.currentUser.getIdToken();
+  const r=await fetch(controlBase+action,{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},body:JSON.stringify(body),signal:AbortSignal.timeout(10000)});
+  if(r.status===403)throw Error('目前帳號未獲 PLAN03 控制授權');
+  if(!r.ok)throw Error('PLAN03 Gateway HTTP '+r.status);
+  return r.json();
+}
+function confirmedControl(state){
+  if(!state.draft)return null;
+  const ack=state.ack?.request_id===state.draft.request_id&&state.ack?.status==='APPLIED'?state.ack:null;
+  return {...state.draft,forced_ends_at:ack?.forced_ends_at??0};
+}
+window.addEventListener('message',async event=>{
+  const source=document.querySelector('#control iframe')?.contentWindow;
+  if(event.origin!==location.origin||event.source!==source||!event.data)return;
+  const post=(type,data={})=>source.postMessage({type,...data},location.origin);
+  if(event.data.type==='plant03-control-probe'){
+    post('plant03-control-protocol',{version:200,probe_id:event.data.probe_id});
+    return;
+  }
+  if(event.data.type==='plant03-control-load'){
+    try{post('plant03-control-load-result',{ok:true,config:confirmedControl(await controlRequest('status'))});}
+    catch(err){post('plant03-control-load-result',{ok:false,error:err.message});}
+    return;
+  }
+  if(event.data.type!=='plant03-control-save'||controlSaving)return;
+  const {request_id,config,force_vent}=event.data;
+  controlSaving=true;
+  try{
+    await controlRequest('save',{request_id,config,force_vent});
+    post('plant03-control-progress',{request_id,message:'已送出，等待 PLANT03 回報套用…'});
+    const limit=Date.now()+65000;
+    while(Date.now()<limit){
+      const state=await controlRequest('status');
+      if(state.draft?.request_id!==request_id)throw Error('此筆指令已被新的設定取代');
+      if(state.ack?.request_id===request_id&&state.ack.status==='APPLIED'){
+        post('plant03-control-result',{request_id,ok:true,config:confirmedControl(state)});
+        return;
+      }
+      await new Promise(resolve=>setTimeout(resolve,2500));
+    }
+    throw Error('設定已送出，但尚未收到板端回執。請確認 V1.0.5 在線');
+  }catch(error){post('plant03-control-result',{request_id,ok:false,error:error.message});}
+  finally{controlSaving=false;}
+});
+
 onAuthStateChanged(auth, async user => {
+  document.querySelector('#control iframe')?.contentWindow?.postMessage({type:'plant03-control-refresh'},location.origin);
   const current = ++generation;
   unsubscribe?.();
   unsubscribe = undefined;
