@@ -190,7 +190,7 @@ nav{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px}nav butto
 <header><small>PLATYCERIUM RESEARCH SYSTEM</small><h1>鹿角蕨環境研究中心 PLAN03</h1></header><div class="dev-auth"><div id="notice" class="notice" role="status"><span id="notice-text">正在確認 Firebase 登入狀態…</span><button id="login-btn" type="button" hidden>使用 Google 登入</button><button id="logout-btn" type="button" hidden>登出</button></div></div>
 
 <section id="monitor" class="active"><div class="grid">
-<div class="card metric climate-pair"><div class="metric-label">箱內</div><div><span>溫度</span><strong id="temperature">— °C</strong></div><div><span>相對濕度</span><strong id="humidity">— %</strong></div><small id="updated">尚無更新時間</small></div><div class="card metric climate-pair"><div class="metric-label">箱外</div><div><span>溫度</span><strong id="outside-temperature">— °C</strong></div><div><span>相對濕度</span><strong id="outside-humidity">— %</strong></div><small id="outside-status">尚未上傳箱外資料</small><a class="local-link" href="http://192.168.8.111/sht30">區網雙感測器</a></div><div class="card metric"><div class="metric-label">VPD</div><div id="vpd" class="value">-- kPa</div></div>
+<div class="card metric climate-pair"><div class="metric-label">箱內</div><div><span>溫度</span><strong id="temperature">— °C</strong></div><div><span>相對濕度</span><strong id="humidity">— %</strong></div><small id="updated">尚無更新時間</small></div><div class="card metric climate-pair"><div class="metric-label">箱外</div><div><span>溫度</span><strong id="outside-temperature">— °C</strong></div><div><span>相對濕度</span><strong id="outside-humidity">— %</strong></div><small id="outside-status" role="status">正在確認登入狀態…</small><a class="local-link" href="http://192.168.8.111/sht30">區網雙感測器</a></div><div class="card metric"><div class="metric-label">VPD</div><div id="vpd" class="value">-- kPa</div></div>
 <button class="card metric ppfd-launch" id="ppfd-launch" type="button" aria-label="開啟 PPFD 與 DLI 光照分析頁"><div class="metric-label">PPFD <span class="launch-arrow">↗</span></div><div id="ppfd" class="value small">未連接</div><div class="launch-hint">查看光照曲線與 DLI</div></button>
 </div>
 <div class="daily-feature" aria-label="每日鹿角蕨資訊">
@@ -322,18 +322,34 @@ document.querySelector('nav [data-section="history"]').addEventListener('click',
 });
 byId('history-refresh').onclick = () => { if (dateInput.value) loadHistory(dateInput.value); };
 byId('light-status').textContent = 'PLANT03 尚無 PPFD 資料。';
-function renderReading(data) {
+function formatReadingTime(timestamp) {
+  return new Date(timestamp).toLocaleString('zh-TW', {timeZone:'Asia/Taipei',hour12:false});
+}
+
+function renderReading(data, emptyStatus = 'Firebase 尚無 PLANT03 即時資料') {
   byId('temperature').textContent = Number.isFinite(data?.temperature) ? data.temperature.toFixed(2) + ' °C' : '—';
   byId('humidity').textContent = Number.isFinite(data?.humidity) ? data.humidity.toFixed(2) + ' %' : '—';
   const timestamp = data?.received_at;
   byId('updated').textContent = Number.isFinite(timestamp) && timestamp > 0
-    ? '更新時間 ' + new Date(timestamp).toLocaleString('zh-TW', {timeZone:'Asia/Taipei',hour12:false})
+    ? '更新時間 ' + formatReadingTime(timestamp)
     : '尚無更新時間';
   const outside = data?.outside;
-  const hasOutside = Number.isFinite(outside?.temperature) && Number.isFinite(outside?.humidity);
+  const hasOutside = Number.isFinite(outside?.temperature) &&
+    Number.isFinite(outside?.humidity) && outside.humidity >= 0 && outside.humidity <= 100;
   byId('outside-temperature').textContent = hasOutside ? outside.temperature.toFixed(2) + ' °C' : '— °C';
   byId('outside-humidity').textContent = hasOutside ? outside.humidity.toFixed(2) + ' %' : '— %';
-  byId('outside-status').textContent = hasOutside ? 'SHT30 #2' : '尚未上傳箱外資料';
+  const outsideStatus = byId('outside-status');
+  if (hasOutside) {
+    outsideStatus.textContent = Number.isFinite(timestamp) && timestamp > 0
+      ? '同步時間 ' + formatReadingTime(timestamp)
+      : '已收到箱外讀值';
+  } else if (data) {
+    outsideStatus.textContent = outside == null
+      ? 'Firebase 最新一筆尚無箱外資料'
+      : '箱外溫濕度資料不完整';
+  } else {
+    outsideStatus.textContent = emptyStatus;
+  }
   const t = data?.temperature;
   const rh = data?.humidity;
   const valid = Number.isFinite(t) && Number.isFinite(rh) && rh >= 0 && rh <= 100;
@@ -349,7 +365,7 @@ onAuthStateChanged(auth, async user => {
   loadHistory(dateInput.value);
   points.length = 0;
   drawChart();
-  renderReading(null);
+  renderReading(null, user ? '正在讀取箱外資料…' : '登入後顯示箱外讀值');
   byId('login-btn').hidden = Boolean(user);
   byId('logout-btn').hidden = !user;
   if (!user) { message('請登入已獲授權的 Google 帳號以讀取 PLANT03。'); return; }
@@ -359,12 +375,14 @@ onAuthStateChanged(auth, async user => {
     if (current !== generation) return;
     const uid = typeof entry === 'string' ? entry : entry?.uid;
     if (typeof uid !== 'string' || !/^[a-f0-9]{48}$/i.test(uid)) {
+      renderReading(null, '找不到 PLANT03 設備登記');
       message('找不到 PLANT03 的設備登記。');
       return;
     }
     const device = (await get(ref(db, 'plantGatewayV1/registry/devices/' + uid))).val();
     if (current !== generation) return;
     if (device?.status !== 'ACTIVE' || device?.hardware_hash !== plant03HardwareHash) {
+      renderReading(null, 'PLANT03 設備登記核對失敗');
       message('PLANT03 的裝置登記未通過核對。');
       return;
     }
@@ -375,10 +393,16 @@ onAuthStateChanged(auth, async user => {
       renderReading(snapshot.val());
       message(snapshot.exists() ? '已讀取 PLANT03 即時資料' : '目前沒有 PLANT03 即時資料');
     }, () => {
-      if (current === generation) { renderReading(null); message('無法讀取即時資料，請核對帳號權限。'); }
+      if (current === generation) {
+        renderReading(null, '無法讀取 Firebase 即時資料');
+        message('無法讀取即時資料，請核對帳號權限。');
+      }
     });
   } catch (error) {
-    if (current === generation) message('無法讀取 PLANT03 登記，請核對帳號權限與網路。');
+    if (current === generation) {
+      renderReading(null, '無法讀取 PLANT03 設備登記');
+      message('無法讀取 PLANT03 登記，請核對帳號權限與網路。');
+    }
   }
 });
 byId('login-btn').onclick = async () => {
