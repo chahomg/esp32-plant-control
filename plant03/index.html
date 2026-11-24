@@ -189,7 +189,13 @@ nav{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px}nav butto
 </head>
 <body><main>
 <div id="home-page">
-<header><small>PLATYCERIUM RESEARCH SYSTEM</small><h1>鹿角蕨環境研究中心 PLAN03</h1></header><div class="dev-auth"><div id="notice" class="notice" role="status"><span id="notice-text">正在確認 Firebase 登入狀態…</span><button id="login-btn" type="button" hidden>使用 Google 登入</button><button id="logout-btn" type="button" hidden>登出</button><small id="account-email" hidden></small></div></div>
+<header><small>PLATYCERIUM RESEARCH SYSTEM</small><h1>鹿角蕨環境研究中心 PLAN03</h1></header><details id="device-manager" style="margin:8px 0;padding:10px;background:#21372c;border-radius:10px;color:#eef7f0">
+<summary style="cursor:pointer;font-weight:700">設備管理</summary>
+<p id="dm-status" role="status">正在確認登入狀態…</p>
+<label id="dm-label" hidden>已配對的設備 <select id="dm-select"></select></label>
+<button type="button" id="dm-enable" hidden>啟用手機控制</button>
+<button type="button" id="dm-reload" hidden>重新讀取</button>
+</details><div class="dev-auth"><div id="notice" class="notice" role="status"><span id="notice-text">正在確認 Firebase 登入狀態…</span><button id="login-btn" type="button" hidden>使用 Google 登入</button><button id="logout-btn" type="button" hidden>登出</button><small id="account-email" hidden></small></div></div>
 
 <section id="monitor" class="active"><div class="grid">
 <div class="card metric climate-pair"><div class="metric-label">箱內</div><div><span>溫度</span><strong id="temperature">— °C</strong></div><div><span>相對濕度</span><strong id="humidity">— %</strong></div><small id="updated">尚無更新時間</small></div><div class="card metric climate-pair"><div class="metric-label">箱外</div><div><span>溫度</span><strong id="outside-temperature">— °C</strong></div><div><span>相對濕度</span><strong id="outside-humidity">— %</strong></div><small id="outside-status" role="status">正在確認登入狀態…</small><a class="local-link" href="http://192.168.8.111/sht30">區網雙感測器</a></div><div class="card metric"><div class="metric-label">VPD</div><div id="vpd" class="value">-- kPa</div></div>
@@ -421,7 +427,64 @@ window.addEventListener('message',async event=>{
   finally{controlSaving=false;}
 });
 
+// Device management API: POST devices/list -> {devices:[{uid,name,control_enabled}]}.
+// POST devices/activate {uid} -> {uid,control_enabled:true}. Both require a Firebase ID token.
+const dm=document.getElementById('device-manager');
+const dmEl=id=>document.getElementById('dm-'+id);
+let dmGeneration=0;
+async function manageDevices(activate=false){
+  const generation=++dmGeneration;
+  const user=auth.currentUser;
+  const select=dmEl('select');
+  const uid=select.value;
+  const current=()=>generation===dmGeneration && user===auth.currentUser;
+  dmEl('label').hidden=dmEl('enable').hidden=dmEl('reload').hidden=true;
+  select.replaceChildren();
+  const status=dmEl('status');
+  if(!user){status.textContent='請先在本頁使用 Google 登入。';return;}
+  status.textContent=activate?'正在啟用手機控制…':'正在讀取已配對的設備…';
+  const request=async(action,body)=>{
+    const token=await user.getIdToken();
+    const controller=new AbortController();
+    const timer=setTimeout(()=>controller.abort(),10000);
+    try{
+      const response=await fetch(new URL('../../devices/'+action,controlBase),{method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify(body),signal:controller.signal});
+      if(response.status===404||response.status===405)throw Error('設備管理服務尚未開通。');
+      if(response.status===401||response.status===403)throw Error('目前帳號無法存取設備管理。');
+      if(!response.ok)throw Error('設備管理服務回應 HTTP '+response.status);
+      return await response.json();
+    }finally{clearTimeout(timer);}
+  };
+  try{
+    if(activate){
+      const result=await request('activate',{uid});
+      if(!current())return;
+      if(result.uid!==uid||result.control_enabled!==true)throw Error('尚未確認設備已啟用。');
+    }
+    const result=await request('list',{});
+    if(!current())return;
+    if(!Array.isArray(result.devices))throw Error('設備清單格式有誤。');
+    for(const d of result.devices){
+      if(!d||typeof d.uid!=='string'||!d.uid||typeof d.control_enabled!=='boolean')continue;
+      const option=new Option((d.name||d.uid)+(d.control_enabled?'（已啟用）':''),d.uid);
+      option.dataset.enabled=String(d.control_enabled);
+      select.add(option);
+    }
+    if([...select.options].some(o=>o.value===uid))select.value=uid;
+    dmEl('label').hidden=dmEl('enable').hidden=!select.length;
+    select.onchange=()=>{dmEl('enable').disabled=select.selectedOptions[0]?.dataset.enabled!=='false';};
+    select.onchange();
+    status.textContent=activate?'設備已啟用手機控制。':select.length?'請選擇已配對的設備。':'此帳號目前沒有已配對的設備。';
+  }catch(error){
+    if(current())status.textContent=error instanceof TypeError||error.name==='AbortError'?'無法連上設備管理服務，請稍後重新讀取。':error.message;
+  }finally{if(current())dmEl('reload').hidden=false;}
+}
+dm.addEventListener('toggle',()=>{if(dm.open)manageDevices();});
+dmEl('reload').onclick=()=>manageDevices();
+dmEl('enable').onclick=()=>manageDevices(true);
+
 onAuthStateChanged(auth, async user => {
+  if(dm.open)manageDevices();
   document.querySelector('#control iframe')?.contentWindow?.postMessage({type:'plant03-control-refresh'},location.origin);
   const current = ++generation;
   unsubscribe?.();
