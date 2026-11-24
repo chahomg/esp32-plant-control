@@ -193,12 +193,13 @@ nav{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px}nav butto
 <summary style="cursor:pointer;font-weight:700">設備管理</summary>
 <p id="dm-status" role="status">正在確認登入狀態…</p>
 <label id="dm-label" hidden>已配對的設備 <select id="dm-select"></select></label>
+<a id="dm-open" hidden>開啟此設備專屬網頁</a>
 <button type="button" id="dm-enable" hidden>啟用手機控制</button>
 <button type="button" id="dm-reload" hidden>重新讀取</button>
 </details><div class="dev-auth"><div id="notice" class="notice" role="status"><span id="notice-text">正在確認 Firebase 登入狀態…</span><button id="login-btn" type="button" hidden>使用 Google 登入</button><button id="logout-btn" type="button" hidden>登出</button><small id="account-email" hidden></small></div></div>
 
 <section id="monitor" class="active"><div class="grid">
-<div class="card metric climate-pair"><div class="metric-label">箱內</div><div><span>溫度</span><strong id="temperature">— °C</strong></div><div><span>相對濕度</span><strong id="humidity">— %</strong></div><small id="updated">尚無更新時間</small></div><div class="card metric climate-pair"><div class="metric-label">箱外</div><div><span>溫度</span><strong id="outside-temperature">— °C</strong></div><div><span>相對濕度</span><strong id="outside-humidity">— %</strong></div><small id="outside-status" role="status">正在確認登入狀態…</small><a class="local-link" href="http://192.168.8.111/sht30">區網雙感測器</a></div><div class="card metric"><div class="metric-label">VPD</div><div id="vpd" class="value">-- kPa</div></div>
+<div class="card metric climate-pair"><div class="metric-label">箱內</div><div><span>溫度</span><strong id="temperature">— °C</strong></div><div><span>相對濕度</span><strong id="humidity">— %</strong></div><small id="updated">尚無更新時間</small></div><div class="card metric climate-pair"><div class="metric-label">箱外</div><div><span>溫度</span><strong id="outside-temperature">— °C</strong></div><div><span>相對濕度</span><strong id="outside-humidity">— %</strong></div><small id="outside-status" role="status">正在確認登入狀態…</small><a class="local-link" hidden data-local="/sht30">區網雙感測器</a></div><div class="card metric"><div class="metric-label">VPD</div><div id="vpd" class="value">-- kPa</div></div>
 <button class="card metric ppfd-launch" id="ppfd-launch" type="button" aria-label="開啟 PPFD 與 DLI 光照分析頁"><div class="metric-label">PPFD <span class="launch-arrow">↗</span></div><div id="ppfd" class="value small">未連接</div><div class="launch-hint">查看光照曲線與 DLI</div></button>
 </div>
 <div class="daily-feature" aria-label="每日鹿角蕨資訊">
@@ -206,17 +207,17 @@ nav{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px}nav butto
   <div class="daily-photo" role="img" aria-label="鹿角蕨專業資訊封面示意"><div class="daily-leaf">🌿</div><div class="daily-photo-label">PLATYCERIUM JOURNAL</div></div>
   <div class="daily-body"><div class="daily-tag">環境與養護 · 專業知識</div><h2>為什麼同一品種的鹿角蕨，孢子葉形態可能不同？</h2><p>從光照、濕度與培育環境出發，認識影響鹿角蕨生長形態的因素。這裡將每日呈現新文章、品種知識與栽培研究。</p><div class="daily-foot">公開閱讀專區 · 不需 Firebase 登入</div><details class="public-article" id="public-article"><summary>閱讀完整文章（公開瀏覽）</summary><div class="public-article-content"><h3>為什麼同一品種的鹿角蕨，孢子葉形態可能不同？</h3><p>即使是相同品種，鹿角蕨的孢子葉也可能因生長環境、植株年齡與個體差異而呈現不同的長度、角度和分岔方式。</p><h4>光照與葉片生長</h4><p>光照強度、每日累積光量（DLI）及光照時間，都可能影響植株的生長狀態。但不能單憑孢子葉長短，就認定某一株接受的光量較高或較低。</p><h4>濕度與水分供應</h4><p>空氣濕度、蒸氣壓差（VPD）、基質含水狀態和通風條件，會共同影響葉片的水分平衡。觀察形態時，最好同步記錄這些條件。</p><h4>如何比較不同環境？</h4><p>可以記錄每片新葉的長度、分岔數、展開角度與生長日期，並對照同期的 PPFD、DLI、溫度、濕度及 VPD。多次觀察才能判斷是否存在穩定的環境與形態關係。</p><p class="article-disclaimer">這是公開示範文章，供測試無登入閱讀功能；內容為一般研究方向說明，不代表已證實的鹿角蕨形態控制結論。</p></div></details></div>
 </div><div class="card chart-card"><div class="chart-head"><span class="chart-title">今日箱內溫濕度曲線</span><span class="chart-note" id="chart-date"></span></div><div class="legend"><span><i class="swatch" style="background:var(--temp)"></i>溫度 °C（左軸）</span><span><i class="swatch" style="background:var(--rh)"></i>濕度 %（右軸）</span></div><div class="chart-wrap"><svg id="chart" viewBox="0 0 350 210" role="img" aria-label="今日溫度與濕度雙軸曲線"></svg></div><p id="chart-message" class="chart-message">等待即時資料；歷史資料尚未連接。</p></div></section>
-<section id="history"><div class="card"><div class="chart-title">PLANT03 箱內每日紀錄</div><p class="status">此雲端頁面讀取 Firebase 歷史資料鏡像，不會直接連接區域網路 MicroSD。ESP32 必須另外把每日紀錄同步到 Firebase。</p><label for="history-date">選擇日期</label> <input id="history-date" type="date"><button id="history-refresh" class="action" type="button">讀取日期紀錄</button><p id="history-status" class="status">等待連線。</p><div class="chart-title" style="margin:12px 0 4px">歷史溫濕度曲線</div><div class="legend"><span><i class="swatch" style="background:var(--temp)"></i>溫度 °C（左軸）</span><span><i class="swatch" style="background:var(--rh)"></i>濕度 %（右軸）</span></div><div class="chart-wrap"><svg id="history-climate-chart" viewBox="0 0 350 210" role="img" aria-label="所選日期歷史溫濕度雙軸曲線"></svg></div><p id="history-climate-status" class="chart-message">尚未讀取歷史溫濕度。</p></div></section>
-<section id="control"><iframe title="PLANT03 環境自動控制" src="./control.html?v=plan03-control-feedback-3" style="display:block;width:100%;height:530px;border:0;border-radius:12px;background:#f3f7f4" loading="lazy"></iframe><p class="status"><a class="local-link" href="http://192.168.8.111/controls">同一 Wi-Fi 下測試三設備開關</a></p></section>
+<section id="history"><div class="card"><div class="chart-title">箱內每日紀錄</div><p class="status">此雲端頁面讀取 Firebase 歷史資料鏡像，不會直接連接區域網路 MicroSD。ESP32 必須另外把每日紀錄同步到 Firebase。</p><label for="history-date">選擇日期</label> <input id="history-date" type="date"><button id="history-refresh" class="action" type="button">讀取日期紀錄</button><p id="history-status" class="status">等待連線。</p><div class="chart-title" style="margin:12px 0 4px">歷史溫濕度曲線</div><div class="legend"><span><i class="swatch" style="background:var(--temp)"></i>溫度 °C（左軸）</span><span><i class="swatch" style="background:var(--rh)"></i>濕度 %（右軸）</span></div><div class="chart-wrap"><svg id="history-climate-chart" viewBox="0 0 350 210" role="img" aria-label="所選日期歷史溫濕度雙軸曲線"></svg></div><p id="history-climate-status" class="chart-message">尚未讀取歷史溫濕度。</p></div></section>
+<section id="control"><iframe title="環境自動控制" src="./control.html?v=shared-control-1" style="display:block;width:100%;height:530px;border:0;border-radius:12px;background:#f3f7f4" loading="lazy"></iframe><p class="status"><a class="local-link" hidden data-local="/controls">同一 Wi-Fi 下測試三設備開關</a></p></section>
 <section id="models"><div class="card placeholder">環境模型待開發：模型儲存與閉環重播。</div></section>
 <nav><button class="active" data-section="monitor">監控</button><button data-section="history">紀錄</button><button data-section="control">控制</button><button data-section="models">模型</button><button type="button" id="network-log-open" aria-label="開啟連線日誌">日誌</button></nav>
 
 
 </div><!-- /home-page: diagnostics must be a sibling, not a child -->
 <div id="light-page" class="light-page" aria-label="PPFD 與 DLI 光照分析"><div class="diag-top"><button id="light-home" class="action" type="button">← 返回監控</button><h2>光照分析</h2></div><div class="card"><div class="chart-title">PPFD 曲線與每小時光量</div><p class="status">PPFD：µmol/m²/s（左軸）；每小時光量：mol/m²（右軸，各小時獨立長條）。</p><div class="chart-wrap light-chart-wrap"><svg id="light-chart" viewBox="0 0 350 240" role="img" aria-label="PPFD 曲線與每小時獨立光量長條圖"></svg></div><p id="light-status" class="status">尚未載入光照歷史資料。</p><button id="light-refresh" class="action" type="button">重新讀取今日光照資料</button><p class="status">每小時光量各自獨立積分，不含先前小時；今日累積 DLI 為各小時總和。超過 30 秒的資料空白不補值，可能低估光量。</p></div></div>
-<div id="diagnostics-page" class="diag-page" aria-label="PLANT03 連線日誌">
+<div id="diagnostics-page" class="diag-page" aria-label="連線日誌">
 <div class="diag-top"><button id="diag-home" class="action" type="button">← 返回監控</button><h2>後端測試結果</h2></div>
-<div class="card"><p class="status"><a class="local-link" href="http://192.168.8.111/diag">開啟 PLANT03 區網診斷</a></p><div id="diag-results" class="diag-grid"></div></div>
+<div class="card"><p class="status"><a class="local-link" hidden data-local="/diag">開啟 設備 區網診斷</a></p><div id="diag-results" class="diag-grid"></div></div>
 <button id="diag-copy" class="action" type="button">複製診斷結果</button>
 </div>
 </main>
@@ -293,6 +294,24 @@ const provider = new GoogleAuthProvider();
 provider.setCustomParameters({prompt:"select_account"});
 const byId = id => document.getElementById(id);
 const plant03HardwareHash = '094a6c7759eba9c7a17b063200bc277378f1cd389e005aadc40498f2f44a5c92';
+const deviceParam=new URLSearchParams(location.search).get('device');
+async function deviceKey(uid){
+  const bytes=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(uid));
+  return Array.from(new Uint8Array(bytes),b=>b.toString(16).padStart(2,'0')).join('');
+}
+let activeDevice=null;
+function namePage(name){
+  document.title=document.querySelector('header h1').textContent='鹿角蕨環境研究中心 '+name;
+}
+if(deviceParam!==null)namePage('設備驗證中');
+function localLinks(legacy){
+  for(const a of document.querySelectorAll('[data-local]')){
+    a.hidden=!legacy;
+    a.style.display=legacy?'':'none';
+    if(legacy)a.href='http://192.168.8.111'+a.dataset.local;
+    else a.removeAttribute('href');
+  }
+}
 let unsubscribe;
 let generation = 0;
 
@@ -308,7 +327,7 @@ async function loadHistory(day) {
   const status = byId('history-status');
   drawHistoryClimate([], day);
   if (!devicePath) {
-    status.textContent = '等待 PLANT03 登入與裝置驗證。';
+    status.textContent = '等待 設備 登入與裝置驗證。';
     return;
   }
   status.textContent = '正在讀取 ' + day + '…';
@@ -321,21 +340,21 @@ async function loadHistory(day) {
       rh: row?.humidity
     })).filter(row => Number.isFinite(row.ms) && dayKey(new Date(row.ms)) === day);
     drawHistoryClimate(records, day);
-    status.textContent = snapshot.exists() ? day + ' 箱內紀錄' : '此日期尚無 PLANT03 雲端歷史紀錄。';
+    status.textContent = snapshot.exists() ? day + ' 箱內紀錄' : '此日期尚無 設備 雲端歷史紀錄。';
   } catch {
-    if (request === historyRequest) status.textContent = '無法讀取 PLANT03 歷史紀錄。';
+    if (request === historyRequest) status.textContent = '無法讀取 設備 歷史紀錄。';
   }
 }
 document.querySelector('nav [data-section="history"]').addEventListener('click', () => {
   if (dateInput.value) loadHistory(dateInput.value);
 });
 byId('history-refresh').onclick = () => { if (dateInput.value) loadHistory(dateInput.value); };
-byId('light-status').textContent = 'PLANT03 尚無 PPFD 資料。';
+byId('light-status').textContent = '設備 尚無 PPFD 資料。';
 function formatReadingTime(timestamp) {
   return new Date(timestamp).toLocaleString('zh-TW', {timeZone:'Asia/Taipei',hour12:false});
 }
 
-function renderReading(data, emptyStatus = 'Firebase 尚無 PLANT03 即時資料') {
+function renderReading(data, emptyStatus = 'Firebase 尚無 設備 即時資料') {
   byId('temperature').textContent = Number.isFinite(data?.temperature) ? data.temperature.toFixed(2) + ' °C' : '—';
   byId('humidity').textContent = Number.isFinite(data?.humidity) ? data.humidity.toFixed(2) + ' %' : '—';
   const timestamp = data?.received_at;
@@ -372,20 +391,23 @@ let controlSaving=false;
 
 async function controlRequest(action,body={}){
   if(!auth.currentUser)throw Error('請先在主頁使用 Google 登入');
-  const token=await auth.currentUser.getIdToken();
+  const user=auth.currentUser, target=activeDevice;
+  if(!target||target.user!==user)throw Error('請先完成設備驗證');
+  const token=await user.getIdToken();
+  if(target!==activeDevice||user!==auth.currentUser)throw Error('登入狀態已變更');
   const controller=new AbortController();
   const timer=setTimeout(()=>controller.abort(),10000);
   let r;
   try{
-    r=await fetch(controlBase+action,{
+    r=await fetch((deviceParam===null?controlBase:new URL("../../devices/control/",controlBase).href)+action,{
       method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},
-      body:JSON.stringify(body),signal:controller.signal
+      body:JSON.stringify(deviceParam===null?body:{...body,uid:target.uid}),signal:controller.signal
     });
   }catch{
-    throw Error('無法連到 PLAN03 雲端控制，請確認網路與 Gateway 部署狀態');
+    throw Error('無法連到 設備雲端控制，請確認網路與 Gateway 部署狀態');
   }finally{clearTimeout(timer);}
-  if(r.status===403)throw Error('目前帳號未獲 PLAN03 控制授權');
-  if(!r.ok)throw Error('PLAN03 Gateway HTTP '+r.status);
+  if(r.status===403)throw Error('目前帳號未獲 設備控制授權');
+  if(!r.ok)throw Error('Gateway HTTP '+r.status);
   return r.json();
 }
 function confirmedControl(state){
@@ -411,7 +433,7 @@ window.addEventListener('message',async event=>{
   controlSaving=true;
   try{
     await controlRequest('save',{request_id,config,force_vent});
-    post('plant03-control-progress',{request_id,message:'已送出，等待 PLANT03 回報套用…'});
+    post('plant03-control-progress',{request_id,message:'已送出，等待 設備 回報套用…'});
     const limit=Date.now()+65000;
     while(Date.now()<limit){
       const state=await controlRequest('status');
@@ -431,19 +453,7 @@ window.addEventListener('message',async event=>{
 // POST devices/activate {uid} -> {uid,control_enabled:true}. Both require a Firebase ID token.
 const dm=document.getElementById('device-manager');
 const dmEl=id=>document.getElementById('dm-'+id);
-let dmGeneration=0;
-async function manageDevices(activate=false){
-  const generation=++dmGeneration;
-  const user=auth.currentUser;
-  const select=dmEl('select');
-  const uid=select.value;
-  const current=()=>generation===dmGeneration && user===auth.currentUser;
-  dmEl('label').hidden=dmEl('enable').hidden=dmEl('reload').hidden=true;
-  select.replaceChildren();
-  const status=dmEl('status');
-  if(!user){status.textContent='請先在本頁使用 Google 登入。';return;}
-  status.textContent=activate?'正在啟用手機控制…':'正在讀取已配對的設備…';
-  const request=async(action,body)=>{
+async function deviceRequest(user,action,body){
     const token=await user.getIdToken();
     const controller=new AbortController();
     const timer=setTimeout(()=>controller.abort(),10000);
@@ -454,25 +464,44 @@ async function manageDevices(activate=false){
       if(!response.ok)throw Error('設備管理服務回應 HTTP '+response.status);
       return await response.json();
     }finally{clearTimeout(timer);}
-  };
+  }
+let dmGeneration=0;
+async function manageDevices(activate=false){
+  const generation=++dmGeneration;
+  const user=auth.currentUser;
+  const select=dmEl('select');
+  const uid=select.value;
+  const current=()=>generation===dmGeneration && user===auth.currentUser;
+  dmEl('open').hidden=dmEl('label').hidden=dmEl('enable').hidden=dmEl('reload').hidden=true;
+  select.replaceChildren();
+  const status=dmEl('status');
+  if(!user){status.textContent='請先在本頁使用 Google 登入。';return;}
+  status.textContent=activate?'正在啟用手機控制…':'正在讀取已配對的設備…';
   try{
     if(activate){
-      const result=await request('activate',{uid});
+      const result=await deviceRequest(user,'activate',{uid});
       if(!current())return;
       if(result.uid!==uid||result.control_enabled!==true)throw Error('尚未確認設備已啟用。');
     }
-    const result=await request('list',{});
+    const result=await deviceRequest(user,'list',{});
     if(!current())return;
     if(!Array.isArray(result.devices))throw Error('設備清單格式有誤。');
     for(const d of result.devices){
       if(!d||typeof d.uid!=='string'||!d.uid||typeof d.control_enabled!=='boolean')continue;
       const option=new Option((d.name||d.uid)+(d.control_enabled?'（已啟用）':''),d.uid);
       option.dataset.enabled=String(d.control_enabled);
+      option.dataset.key=await deviceKey(d.uid);
+      if(!current())return;
       select.add(option);
     }
-    if([...select.options].some(o=>o.value===uid))select.value=uid;
+    const preferred=[...select.options].find(o=>uid?o.value===uid:o.dataset.key===deviceParam);
+    if(preferred)select.value=preferred.value;
     dmEl('label').hidden=dmEl('enable').hidden=!select.length;
-    select.onchange=()=>{dmEl('enable').disabled=select.selectedOptions[0]?.dataset.enabled!=='false';};
+    select.onchange=()=>{
+      const key=select.selectedOptions[0]?.dataset.key;
+      dmEl('open').hidden=!key;
+      if(key){const url=new URL(location.pathname,location.origin);url.searchParams.set('device',key);dmEl('open').href=url.href;}
+      dmEl('enable').disabled=select.selectedOptions[0]?.dataset.enabled!=='false';};
     select.onchange();
     status.textContent=activate?'設備已啟用手機控制。':select.length?'請選擇已配對的設備。':'此帳號目前沒有已配對的設備。';
   }catch(error){
@@ -489,6 +518,9 @@ onAuthStateChanged(auth, async user => {
   const current = ++generation;
   unsubscribe?.();
   unsubscribe = undefined;
+  activeDevice=null;
+  localLinks(false);
+  if(deviceParam!==null)namePage('設備驗證中');
   devicePath = undefined;
   loadHistory(dateInput.value);
   points.length = 0;
@@ -499,30 +531,49 @@ onAuthStateChanged(auth, async user => {
   const accountEmail = byId('account-email');
   accountEmail.hidden = !user?.email;
   accountEmail.textContent = user?.email ? '目前登入帳號 '+user.email : '';
-  if (!user) { message('請登入已獲授權的 Google 帳號以讀取 PLANT03。'); return; }
-  message('正在讀取 PLANT03…');
+  if (!user) { message('請登入已獲授權的 Google 帳號以讀取設備。'); return; }
+  message('正在讀取設備…');
   try {
+    let uid,legacy=false,name;
+    if(deviceParam===null){
     const entry = (await get(ref(db, 'plantGatewayV1/registry/byHardware/' + plant03HardwareHash))).val();
     if (current !== generation) return;
-    const uid = typeof entry === 'string' ? entry : entry?.uid;
+    uid = typeof entry === 'string' ? entry : entry?.uid;
     if (typeof uid !== 'string' || !/^[a-f0-9]{48}$/i.test(uid)) {
-      renderReading(null, '找不到 PLANT03 設備登記');
-      message('找不到 PLANT03 的設備登記。');
+      renderReading(null, '找不到 設備 設備登記');
+      message('找不到 設備 的設備登記。');
       return;
     }
     const device = (await get(ref(db, 'plantGatewayV1/registry/devices/' + uid))).val();
     if (current !== generation) return;
     if (device?.status !== 'ACTIVE' || device?.hardware_hash !== plant03HardwareHash) {
-      renderReading(null, 'PLANT03 設備登記核對失敗');
-      message('PLANT03 的裝置登記未通過核對。');
+      renderReading(null, '設備 設備登記核對失敗');
+      message('設備 的裝置登記未通過核對。');
       return;
     }
+
+      legacy=true;name='PLAN03';
+    }else{
+      if(!/^[a-f0-9]{64}$/.test(deviceParam))throw Error('INVALID_DEVICE');
+      const result=await deviceRequest(user,'list',{});
+      const entries=await Promise.all(result.devices.map(async d=>[await deviceKey(d.uid),d]));
+      if(current!==generation)return;
+      const selected=entries.find(([key])=>key===deviceParam)?.[1];
+      if(!selected){message('此帳號無法開啟指定的設備。');return;}
+      uid=selected.uid;name=selected.name;
+      legacy=name==='PLAN03';
+    }
+    if(current!==generation)return;
+    activeDevice={uid,user};
+    namePage(name);
+    localLinks(legacy);
+    document.querySelector('#control iframe')?.contentWindow?.postMessage({type:'plant03-control-refresh'},location.origin);
     devicePath = 'plantGatewayV1/deviceData/' + uid;
     if (document.querySelector('#history.active')) loadHistory(dateInput.value);
     unsubscribe = onValue(ref(db, devicePath + '/latest'), snapshot => {
       if (current !== generation) return;
       renderReading(snapshot.val());
-      message(snapshot.exists() ? '已讀取 PLANT03 即時資料' : '目前沒有 PLANT03 即時資料');
+      message(snapshot.exists() ? '已讀取 設備 即時資料' : '目前沒有 設備 即時資料');
     }, () => {
       if (current === generation) {
         renderReading(null, '無法讀取 Firebase 即時資料');
@@ -531,8 +582,8 @@ onAuthStateChanged(auth, async user => {
     });
   } catch (error) {
     if (current === generation) {
-      renderReading(null, '無法讀取 PLANT03 設備登記');
-      message('無法讀取 PLANT03 登記，請核對帳號權限與網路。');
+      renderReading(null, '無法讀取 設備 設備登記');
+      message('無法讀取 設備 登記，請核對帳號權限與網路。');
     }
   }
 });
