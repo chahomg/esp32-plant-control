@@ -465,6 +465,12 @@ async function deviceRequest(user,action,body){
       return await response.json();
     }finally{clearTimeout(timer);}
   }
+// The PLAN04 enrollment is identified by its existing UID suffix in this account.
+function deviceDisplayName(device, devices) {
+  const matchesPlan04 = candidate => /^[a-f0-9]{42}b8eb20$/i.test(candidate?.uid ?? '');
+  if (matchesPlan04(device) && devices.filter(matchesPlan04).length === 1) return 'PLAN04';
+  return device.name || device.uid;
+}
 let dmGeneration=0;
 async function manageDevices(activate=false){
   const generation=++dmGeneration;
@@ -488,7 +494,7 @@ async function manageDevices(activate=false){
     if(!Array.isArray(result.devices))throw Error('設備清單格式有誤。');
     for(const d of result.devices){
       if(!d||typeof d.uid!=='string'||!d.uid||typeof d.control_enabled!=='boolean')continue;
-      const option=new Option((d.name||d.uid)+(d.control_enabled?'（已啟用）':''),d.uid);
+      const option=new Option(deviceDisplayName(d,result.devices)+(d.control_enabled?'（已啟用）':''),d.uid);
       option.dataset.enabled=String(d.control_enabled);
       option.dataset.key=await deviceKey(d.uid);
       if(!current())return;
@@ -560,8 +566,8 @@ onAuthStateChanged(auth, async user => {
       if(current!==generation)return;
       const selected=entries.find(([key])=>key===deviceParam)?.[1];
       if(!selected){message('此帳號無法開啟指定的設備。');return;}
-      uid=selected.uid;name=selected.name;
-      legacy=name==='PLAN03';
+      uid=selected.uid;name=deviceDisplayName(selected,result.devices);
+      legacy=selected.name==='PLAN03';
     }
     if(current!==generation)return;
     activeDevice={uid,user};
