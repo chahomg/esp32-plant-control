@@ -185,11 +185,26 @@ nav{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px}nav butto
 .local-link{color:#b9eed4}
 
 #account-email:not([hidden]){display:block;overflow-wrap:anywhere}
+#device-link-help{display:none}
+body.device-link-required #device-link-help{display:block}
+body.device-link-required #home-page>section,
+body.device-link-required #home-page>nav,
+body.device-link-required #device-manager,
+body.device-link-required .dev-auth{display:none!important}
 </style>
 </head>
-<body><main>
+<body><script>
+const entryParams = new URLSearchParams(location.search);
+if (!entryParams.has('device') && entryParams.get('admin') !== '1') {
+  document.body.classList.add('device-link-required');
+}
+</script><main>
 <div id="home-page">
-<header><small>PLATYCERIUM RESEARCH SYSTEM</small><h1>鹿角蕨環境研究中心 PLAN03</h1></header><details id="device-manager" style="margin:8px 0;padding:10px;background:#21372c;border-radius:10px;color:#eef7f0">
+<header><small>PLATYCERIUM RESEARCH SYSTEM</small><h1>鹿角蕨環境研究中心</h1></header>
+<div id="device-link-help" class="notice">
+  <p>請使用設備設定頁產生的完整專屬網址，即可自動開啟該設備的監控與控制。</p>
+  <a class="local-link" href="?admin=1">管理員登入</a>
+</div><details id="device-manager" style="margin:8px 0;padding:10px;background:#21372c;border-radius:10px;color:#eef7f0">
 <summary style="cursor:pointer;font-weight:700">設備管理</summary>
 <p id="dm-status" role="status">正在確認登入狀態…</p>
 <label id="dm-label" hidden>已配對的設備 <select id="dm-select"></select></label>
@@ -308,6 +323,7 @@ function namePage(name){
   document.title=document.querySelector('header h1').textContent='鹿角蕨環境研究中心 '+name;
 }
 if(deviceParam!==null)namePage('設備驗證中');
+else if(!document.body.classList.contains('device-link-required'))namePage('PLAN03');
 function localLinks(legacy){
   for(const a of document.querySelectorAll('[data-local]')){
     a.hidden=!legacy;
@@ -538,6 +554,7 @@ dmEl('reload').onclick=()=>manageDevices();
 dmEl('enable').onclick=()=>manageDevices(true);
 
 onAuthStateChanged(auth, async user => {
+  if(document.body.classList.contains('device-link-required'))return;
   if(dm.open)manageDevices();
   document.querySelector('#control iframe')?.contentWindow?.postMessage({type:'plant03-control-refresh'},location.origin);
   const current = ++generation;
@@ -571,14 +588,15 @@ onAuthStateChanged(auth, async user => {
     unsubscribe=()=>{stopped=true;clearTimeout(timer);};
     const poll=async()=>{
       try{
-        const {data}=await anonymousRequest(user,'latest');
+        const {data,device_name:deviceName}=await anonymousRequest(user,'latest');
         if(stopped||current!==generation)return;
         if(!activeDevice){
           activeDevice={user,anonymous:true};
-          namePage('專屬設備');
           document.querySelector('#control iframe')?.contentWindow?.postMessage({type:'plant03-control-refresh'},location.origin);
           if(document.querySelector('#history.active'))loadHistory(dateInput.value);
         }
+        const displayName = typeof deviceName === 'string' ? deviceName.trim() : '';
+        namePage(displayName || '專屬設備');
         renderReading(data);
         message(data?'已讀取 設備 即時資料':'目前沒有 設備 即時資料');
       }catch(e){
@@ -665,6 +683,6 @@ byId('login-btn').onclick = async () => {
   }
 };
 byId('logout-btn').onclick = () => signOut(auth).catch(() => message('登出失敗，請重試。'));
-if(!anonymousMode)getRedirectResult(auth).catch(() => message('登入未完成，請重試。'));
+if(!anonymousMode&&!document.body.classList.contains('device-link-required'))getRedirectResult(auth).catch(() => message('登入未完成，請重試。'));
 </script></body></html>
 
