@@ -291,6 +291,8 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getDatabase(app);
 const provider = new GoogleAuthProvider();
+const operatorEmail='chahomg@gmail.com';
+provider.setCustomParameters({login_hint:operatorEmail});
 provider.setCustomParameters({prompt:"select_account"});
 const byId = id => document.getElementById(id);
 const plant03HardwareHash = '094a6c7759eba9c7a17b063200bc277378f1cd389e005aadc40498f2f44a5c92';
@@ -452,6 +454,7 @@ window.addEventListener('message',async event=>{
 // Device management API: POST devices/list -> {devices:[{uid,name,control_enabled}]}.
 // POST devices/activate {uid} -> {uid,control_enabled:true}. Both require a Firebase ID token.
 const dm=document.getElementById('device-manager');
+if(deviceParam!==null){dm.open=false;dm.hidden=true;dm.style.display='none';}
 const dmEl=id=>document.getElementById('dm-'+id);
 async function deviceRequest(user,action,body){
     const token=await user.getIdToken();
@@ -538,6 +541,7 @@ onAuthStateChanged(auth, async user => {
   accountEmail.hidden = !user?.email;
   accountEmail.textContent = user?.email ? '目前登入帳號 '+user.email : '';
   if (!user) { message('請登入已獲授權的 Google 帳號以讀取設備。'); return; }
+  if(user.email?.toLowerCase()!==operatorEmail){message('目前登入帳號不符合設備管理授權，請登出後使用 '+operatorEmail+' 登入。');return;}
   message('正在讀取設備…');
   try {
     let uid,legacy=false,name;
