@@ -186,9 +186,7 @@ nav{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px}nav butto
 
 #account-email:not([hidden]){display:block;overflow-wrap:anywhere}
 #device-link-help{display:none}
-body.device-link-required #device-link-help{display:block}
-body.device-link-required #home-page>section,
-body.device-link-required #home-page>nav,
+body.device-link-required #device-link-help{display:block;order:5}
 body.device-link-required #device-manager,
 body.device-link-required .dev-auth{display:none!important}
 </style>
@@ -202,7 +200,7 @@ if (!entryParams.has('device') && entryParams.get('admin') !== '1') {
 <div id="home-page">
 <header><small>PLATYCERIUM RESEARCH SYSTEM</small><h1>鹿角蕨環境研究中心</h1></header>
 <div id="device-link-help" class="notice">
-  <p>請使用設備設定頁產生的完整專屬網址，即可自動開啟該設備的監控與控制。</p>
+  <p>使用設備專屬網址可載入實際讀值與控制狀態。</p>
   <a class="local-link" href="?admin=1">管理員登入</a>
 </div><details id="device-manager" style="margin:8px 0;padding:10px;background:#21372c;border-radius:10px;color:#eef7f0">
 <summary style="cursor:pointer;font-weight:700">設備管理</summary>
