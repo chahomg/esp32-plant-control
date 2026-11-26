@@ -284,11 +284,13 @@ setDiag('前端載入','PASS','綠色網頁程式已啟動');setDiag('Firebase �
 </script>
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js';
-import { getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signInWithRedirect, getRedirectResult, signOut } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js';
+import { getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signInWithRedirect, getRedirectResult, signOut, signInAnonymously } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js';
 import { getDatabase, get, ref, onValue } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js';
 const firebaseConfig={apiKey:'AIzaSyCKzLgyUZkWAfnJkqDMtxuOsTJeMC_RdHA',authDomain:'esp32-plant-control.firebaseapp.com',databaseURL:'https://esp32-plant-control-default-rtdb.asia-southeast1.firebasedatabase.app',projectId:'esp32-plant-control',storageBucket:'esp32-plant-control.firebasestorage.app',messagingSenderId:'758179316822',appId:'1:758179316822:web:fbec086993309ef15ca7f7'}
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+const dedicatedKey=new URLSearchParams(location.search).get('device');
+const anonymousMode=dedicatedKey!==null && new URLSearchParams(location.search).get('admin')!=='1';
+const auth = getAuth(anonymousMode?initializeApp(firebaseConfig,'device-consumer'):app);
 const db = getDatabase(app);
 const provider = new GoogleAuthProvider();
 const operatorEmail='chahomg@gmail.com';
@@ -328,13 +330,15 @@ async function loadHistory(day) {
   const request = ++historyRequest;
   const status = byId('history-status');
   drawHistoryClimate([], day);
-  if (!devicePath) {
+  if (!devicePath && !activeDevice?.anonymous) {
     status.textContent = '等待 設備 登入與裝置驗證。';
     return;
   }
   status.textContent = '正在讀取 ' + day + '…';
   try {
-    const snapshot = await get(ref(db, devicePath + '/history/' + day));
+    const snapshot = activeDevice?.anonymous
+      ? await anonymousRequest(activeDevice.user,'history',{day}).then(({data})=>({val:()=>data,exists:()=>data!=null}))
+      : await get(ref(db, devicePath + '/history/' + day));
     if (request !== historyRequest) return;
     const records = Object.entries(snapshot.val() || {}).map(([key, row]) => ({
       ms: msFrom(row?.received_at ?? row?.timestamp ?? key),
@@ -391,6 +395,18 @@ function renderReading(data, emptyStatus = 'Firebase 尚無 設備 即時資料'
 const controlBase='https://asia-southeast1-esp32-plant-control.cloudfunctions.net/plantDeviceGateway/plant03/control/';
 let controlSaving=false;
 
+async function anonymousRequest(user,action,body={}){
+  const token=await user.getIdToken();
+  const controller=new AbortController();
+  const timer=setTimeout(()=>controller.abort(),15000);
+  try{
+    const response=await fetch(new URL('../../devices/anonymous/'+action,controlBase),{
+      method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},
+      body:JSON.stringify({...body,device_key:deviceParam}),signal:controller.signal});
+    if(!response.ok){const e=Error('Gateway HTTP '+response.status);e.status=response.status;throw e;}
+    return await response.json();
+  }finally{clearTimeout(timer);}
+}
 async function controlRequest(action,body={}){
   if(!auth.currentUser)throw Error('請先在主頁使用 Google 登入');
   const user=auth.currentUser, target=activeDevice;
@@ -403,7 +419,7 @@ async function controlRequest(action,body={}){
   try{
     r=await fetch((deviceParam===null?controlBase:new URL("../../devices/control/",controlBase).href)+action,{
       method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},
-      body:JSON.stringify(deviceParam===null?body:{...body,uid:target.uid}),signal:controller.signal
+      body:JSON.stringify(target.anonymous?{...body,device_key:deviceParam}:deviceParam===null?body:{...body,uid:target.uid}),signal:controller.signal
     });
   }catch{
     throw Error('無法連到 設備雲端控制，請確認網路與 Gateway 部署狀態');
@@ -540,6 +556,48 @@ onAuthStateChanged(auth, async user => {
   const accountEmail = byId('account-email');
   accountEmail.hidden = !user?.email;
   accountEmail.textContent = user?.email ? '目前登入帳號 '+user.email : '';
+  if(anonymousMode){
+    byId('login-btn').hidden=true;
+    byId('logout-btn').hidden=true;
+    accountEmail.hidden=true;
+    if(!/^[a-f0-9]{64}$/.test(deviceParam)){message('設備網址格式錯誤');return;}
+    if(!user){
+      message('正在自動驗證設備…');
+      try{await signInAnonymously(auth);}catch(e){message('匿名登入失敗：'+e.code);}
+      return;
+    }
+    if(!user.isAnonymous){message('匿名驗證狀態異常');return;}
+    let stopped=false,timer;
+    unsubscribe=()=>{stopped=true;clearTimeout(timer);};
+    const poll=async()=>{
+      try{
+        const {data}=await anonymousRequest(user,'latest');
+        if(stopped||current!==generation)return;
+        if(!activeDevice){
+          activeDevice={user,anonymous:true};
+          namePage('專屬設備');
+          document.querySelector('#control iframe')?.contentWindow?.postMessage({type:'plant03-control-refresh'},location.origin);
+          if(document.querySelector('#history.active'))loadHistory(dateInput.value);
+        }
+        renderReading(data);
+        message(data?'已讀取 設備 即時資料':'目前沒有 設備 即時資料');
+      }catch(e){
+        if(stopped||current!==generation)return;
+        message('設備資料讀取失敗：'+e.message);
+        if(e.status===403){
+          activeDevice=null;
+          const link=document.createElement('a');
+          const url=new URL(location.href);url.searchParams.set('admin','1');
+          link.href=url.href;link.textContent='舊設備管理帳號登入';
+          byId('notice-text').append(' ',link);
+          return;
+        }
+      }
+      if(!stopped&&current===generation)timer=setTimeout(poll,30000);
+    };
+    await poll();
+    return;
+  }
   if (!user) { message('請登入已獲授權的 Google 帳號以讀取設備。'); return; }
   if(user.email?.toLowerCase()!==operatorEmail){message('目前登入帳號不符合設備管理授權，請登出後使用 '+operatorEmail+' 登入。');return;}
   message('正在讀取設備…');
@@ -607,6 +665,6 @@ byId('login-btn').onclick = async () => {
   }
 };
 byId('logout-btn').onclick = () => signOut(auth).catch(() => message('登出失敗，請重試。'));
-getRedirectResult(auth).catch(() => message('登入未完成，請重試。'));
+if(!anonymousMode)getRedirectResult(auth).catch(() => message('登入未完成，請重試。'));
 </script></body></html>
 
