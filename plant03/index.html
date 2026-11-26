@@ -201,7 +201,6 @@ if (!entryParams.has('device') && entryParams.get('admin') !== '1') {
 <header><small>PLATYCERIUM RESEARCH SYSTEM</small><h1>鹿角蕨環境研究中心</h1></header>
 <div id="device-link-help" class="notice">
   <p>使用設備專屬網址可載入實際讀值與控制狀態。</p>
-  <a class="local-link" href="?admin=1">管理員登入</a>
 </div><details id="device-manager" style="margin:8px 0;padding:10px;background:#21372c;border-radius:10px;color:#eef7f0">
 <summary style="cursor:pointer;font-weight:700">設備管理</summary>
 <p id="dm-status" role="status">正在確認登入狀態…</p>
@@ -602,10 +601,6 @@ onAuthStateChanged(auth, async user => {
         message('設備資料讀取失敗：'+e.message);
         if(e.status===403){
           activeDevice=null;
-          const link=document.createElement('a');
-          const url=new URL(location.href);url.searchParams.set('admin','1');
-          link.href=url.href;link.textContent='舊設備管理帳號登入';
-          byId('notice-text').append(' ',link);
           return;
         }
       }
